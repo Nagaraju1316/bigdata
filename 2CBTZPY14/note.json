@@ -1,0 +1,1829 @@
+{
+  "paragraphs": [
+    {
+      "text": "%md\n\n![sv-image](https://raw.githubusercontent.com/roberthryniewicz/images/master/silicon_valley_corporation.jpg)\n\n## Apache Spark in 5 Minutes \n#### Exploring Silicon Valley Show Episodes Dataset\n\n**Level**: Beginner\n**Language**: Scala\n**Requirements**: \n- [HDP 2.6](http://hortonworks.com/products/sandbox/) (or later) or [HDCloud](https://hortonworks.github.io/hdp-aws/)\n- Spark 2.x\n\n**Author**: Robert Hryniewicz\n**Follow** [@RobertH8z](https://twitter.com/RobertH8z)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:19:59.304",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003e\u003cimg src\u003d\"https://raw.githubusercontent.com/roberthryniewicz/images/master/silicon_valley_corporation.jpg\" alt\u003d\"sv-image\" /\u003e\u003c/p\u003e\n\u003ch2\u003eApache Spark in 5 Minutes\u003c/h2\u003e\n\u003ch4\u003eExploring Silicon Valley Show Episodes Dataset\u003c/h4\u003e\n\u003cp\u003e\u003cstrong\u003eLevel\u003c/strong\u003e: Beginner\n\u003cbr  /\u003e\u003cstrong\u003eLanguage\u003c/strong\u003e: Scala\n\u003cbr  /\u003e\u003cstrong\u003eRequirements\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ca href\u003d\"http://hortonworks.com/products/sandbox/\"\u003eHDP 2.6\u003c/a\u003e (or later) or \u003ca href\u003d\"https://hortonworks.github.io/hdp-aws/\"\u003eHDCloud\u003c/a\u003e\u003c/li\u003e\n\u003cli\u003eSpark 2.x\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003e\u003cstrong\u003eAuthor\u003c/strong\u003e: Robert Hryniewicz\n\u003cbr  /\u003e\u003cstrong\u003eFollow\u003c/strong\u003e \u003ca href\u003d\"https://twitter.com/RobertH8z\"\u003e@RobertH8z\u003c/a\u003e\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821074_-1765493669",
+      "id": "20161013-011142_1891215806",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:19:59.394",
+      "dateFinished": "2018-08-06 11:19:59.398",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Short Intro",
+      "text": "%md\n\nWelcome to a quick overview of Apache Spark with Sillicon Valley Episodes dataset. If you\u0027ve never watched the Silicon Valley show you can learn more about it [here](https://en.wikipedia.org/wiki/Silicon_Valley_(TV_series)). \n\nIn this notebook we will download the dataset (in JSON format) from an external github repository, ingest it into a Spark Dataset and perform basic analysis, filtering, and word count.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:19:59.494",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eWelcome to a quick overview of Apache Spark with Sillicon Valley Episodes dataset. If you\u0027ve never watched the Silicon Valley show you can learn more about it \u003ca href\u003d\"https://en.wikipedia.org/wiki/Silicon_Valley_(TV_series)\"\u003ehere\u003c/a\u003e.\u003c/p\u003e\n\u003cp\u003eIn this notebook we will download the dataset (in JSON format) from an external github repository, ingest it into a Spark Dataset and perform basic analysis, filtering, and word count.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821076_-1767802163",
+      "id": "20161013-011155_1645524279",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:19:59.560",
+      "dateFinished": "2018-08-06 11:19:59.562",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "New to Scala?",
+      "text": "%md\n\nThroughout this lab we will use basic Scala syntax. If you would like to learn more about Scala, here\u0027s an excellent introductory [Tutorial](http://www.dhgarrette.com/nlpclass/scala/basics.html).",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:19:59.660",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eThroughout this lab we will use basic Scala syntax. If you would like to learn more about Scala, here\u0027s an excellent introductory \u003ca href\u003d\"http://www.dhgarrette.com/nlpclass/scala/basics.html\"\u003eTutorial\u003c/a\u003e.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821077_-1768186912",
+      "id": "20161013-173447_845128564",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:19:59.726",
+      "dateFinished": "2018-08-06 11:19:59.728",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "New to Zeppelin?",
+      "text": "%md\n\nIf you haven\u0027t already, checkout the [Hortonworks Apache Zeppelin](https://hortonworks.com/apache/zeppelin/) page as well as the [Getting Started with Apache Zeppelin](http://hortonworks.com/hadoop-tutorial/getting-started-apache-zeppelin/) tutorial.\n\nYou will find the official Apache Zeppelin page [here](https://zeppelin.apache.org/).",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:19:59.825",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eIf you haven\u0027t already, checkout the \u003ca href\u003d\"https://hortonworks.com/apache/zeppelin/\"\u003eHortonworks Apache Zeppelin\u003c/a\u003e page as well as the \u003ca href\u003d\"http://hortonworks.com/hadoop-tutorial/getting-started-apache-zeppelin/\"\u003eGetting Started with Apache Zeppelin\u003c/a\u003e tutorial.\u003c/p\u003e\n\u003cp\u003eYou will find the official Apache Zeppelin page \u003ca href\u003d\"https://zeppelin.apache.org/\"\u003ehere\u003c/a\u003e.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821077_-1768186912",
+      "id": "20161014-155201_679736099",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:19:59.893",
+      "dateFinished": "2018-08-06 11:19:59.895",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "New to Spark?",
+      "text": "%md\n\nApache Spark is a fast, in-memory data processing engine with elegant and expressive development APIs to allow data workers to efficiently execute streaming, machine learning or SQL workloads that require fast iterative access to datasets.\n\nIf you would like to learn more about Apache Spark visit:\n- [Official Apache Spark Page](http://spark.apache.org/)\n- [Hortonworks Apache Spark Page](http://hortonworks.com/apache/spark/)\n- [Hortonworks Apache Spark Docs](http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_spark-component-guide/content/ch_developing-spark-apps.html)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:19:59.993",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eApache Spark is a fast, in-memory data processing engine with elegant and expressive development APIs to allow data workers to efficiently execute streaming, machine learning or SQL workloads that require fast iterative access to datasets.\u003c/p\u003e\n\u003cp\u003eIf you would like to learn more about Apache Spark visit:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ca href\u003d\"http://spark.apache.org/\"\u003eOfficial Apache Spark Page\u003c/a\u003e\u003c/li\u003e\n\u003cli\u003e\u003ca href\u003d\"http://hortonworks.com/apache/spark/\"\u003eHortonworks Apache Spark Page\u003c/a\u003e\u003c/li\u003e\n\u003cli\u003e\u003ca href\u003d\"http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_spark-component-guide/content/ch_developing-spark-apps.html\"\u003eHortonworks Apache Spark Docs\u003c/a\u003e\u003c/li\u003e\n\u003c/ul\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821078_-1767032665",
+      "id": "20161014-121442_628671851",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:00.056",
+      "dateFinished": "2018-08-06 11:20:00.059",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "How to run a paragraph?",
+      "text": "%md\nTo run a paragraph in a Zeppelin notebook you can either click the `play` button (blue triangle) on the right-hand side or simply press `Shift + Enter`.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:00.156",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eTo run a paragraph in a Zeppelin notebook you can either click the \u003ccode\u003eplay\u003c/code\u003e button (blue triangle) on the right-hand side or simply press \u003ccode\u003eShift + Enter\u003c/code\u003e.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821078_-1767032665",
+      "id": "20161014-144044_1782842084",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:00.212",
+      "dateFinished": "2018-08-06 11:20:00.214",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "What are Interpreters?",
+      "text": "%md\n\nIn the following paragraphs we are going to execute Spark code, run shell commands to download and move files, run sql queries etc. Each paragraph will start with `%` followed by an interpreter name, e.g. `%spark2` for a Spark 2.x interpreter. Different interpreter names indicate what will be executed: code, markdown, html etc.This allows you to perform data ingestion, munging, wrangling, visualization, analysis, processing and more, all in one place!\n\nThroughtout this notebook we will use the following interpreters:\n\n- `%spark2` - Spark interpreter to run Spark 2.x code written in Scala\n- `%spark2.sql` - Spark SQL interprter (to execute SQL queries against temporary tables in Spark)\n- `%sh` - Shell interpreter to run shell commands\n- `%angular` - Angular interpreter to run Angular and HTML code\n- `%md` - Markdown for displaying formatted text, links, and images\n\nTo learn more about Zeppelin interpreters check out this [link](https://zeppelin.apache.org/docs/0.5.6-incubating/manual/interpreters.html).",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:00.312",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eIn the following paragraphs we are going to execute Spark code, run shell commands to download and move files, run sql queries etc. Each paragraph will start with \u003ccode\u003e%\u003c/code\u003e followed by an interpreter name, e.g. \u003ccode\u003e%spark2\u003c/code\u003e for a Spark 2.x interpreter. Different interpreter names indicate what will be executed: code, markdown, html etc.This allows you to perform data ingestion, munging, wrangling, visualization, analysis, processing and more, all in one place!\u003c/p\u003e\n\u003cp\u003eThroughtout this notebook we will use the following interpreters:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003e%spark2\u003c/code\u003e - Spark interpreter to run Spark 2.x code written in Scala\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%spark2.sql\u003c/code\u003e - Spark SQL interprter (to execute SQL queries against temporary tables in Spark)\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%sh\u003c/code\u003e - Shell interpreter to run shell commands\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%angular\u003c/code\u003e - Angular interpreter to run Angular and HTML code\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%md\u003c/code\u003e - Markdown for displaying formatted text, links, and images\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eTo learn more about Zeppelin interpreters check out this \u003ca href\u003d\"https://zeppelin.apache.org/docs/0.5.6-incubating/manual/interpreters.html\"\u003elink\u003c/a\u003e.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821078_-1767032665",
+      "id": "20161014-145714_450762590",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:00.376",
+      "dateFinished": "2018-08-06 11:20:00.379",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Some initial delay to be expected...",
+      "text": "%md\n**Note**: The first time you run `spark.version` in the paragraph below, several services will initialize in the background. \nThis may take **1~2 min** so please **be patient**. Afterwards, each paragraph should run much more quickly since all the services will already be running.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:00.475",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003e\u003cstrong\u003eNote\u003c/strong\u003e: The first time you run \u003ccode\u003espark.version\u003c/code\u003e in the paragraph below, several services will initialize in the background.\n\u003cbr  /\u003eThis may take \u003cstrong\u003e1~2 min\u003c/strong\u003e so please \u003cstrong\u003ebe patient\u003c/strong\u003e. Afterwards, each paragraph should run much more quickly since all the services will already be running.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821079_-1767417414",
+      "id": "20161014-144409_1067974024",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:00.607",
+      "dateFinished": "2018-08-06 11:20:00.610",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Verify Spark Version (should be 2.x)",
+      "text": "%spark2.spark\n\nspark.version",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:00.707",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "res195: String \u003d 2.3.1.3.0.1.0-46\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821079_-1767417414",
+      "id": "20161012-235330_1461856587",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:00.764",
+      "dateFinished": "2018-08-06 11:20:00.947",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Download JSON data file and write its contents to HDFS (if available/supported)",
+      "text": "%spark2.spark\nimport scala.io.Source\nimport org.apache.hadoop.conf.Configuration;\nimport org.apache.hadoop.fs.FileSystem;\nimport org.apache.hadoop.fs.Path;\nimport java.io.PrintWriter;\n\nval json_content \u003d Source.fromURL(\"https://raw.githubusercontent.com/roberthryniewicz/datasets/master/svepisodes.json\").mkString\nval conf \u003d new Configuration()\nval fs\u003d FileSystem.get(conf)\nval output \u003d fs.create(new Path(\"/tmp/svepisodes.json\"))\nval writer \u003d new PrintWriter(output)\nwriter.write(json_content)\nwriter.close()",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:00.964",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "import scala.io.Source\nimport org.apache.hadoop.conf.Configuration\nimport org.apache.hadoop.fs.FileSystem\nimport org.apache.hadoop.fs.Path\nimport java.io.PrintWriter\njson_content: String \u003d\n\"[{\"id\":10897,\"url\":\"http://www.tvmaze.com/episodes/10897/silicon-valley-1x01-minimum-viable-product\",\"name\":\"Minimum Viable Product\",\"season\":1,\"number\":1,\"airdate\":\"2014-04-06\",\"airtime\":\"22:00\",\"airstamp\":\"2014-04-06T22:00:00-04:00\",\"runtime\":30,\"summary\":\"Attending an elaborate launch party, Richard  and his computer programmer friends - Big Head, Dinesh  and Gilfoyle  - dream of making it big. Instead, they\u0027re living in the communal Hacker Hostel owned by former programmer Erlich, who gets to claim ten percent of anything they invent there. When it becomes clear that Richard has developed a powerful compression algorithm for his website, Pied Piper, he finds himself courted by Gavin Belson, his egomaniacal corporate boss, who offers a $10 million buyout by hi...conf: org.apache.hadoop.conf.Configuration \u003d Configuration: core-default.xml, core-site.xml, mapred-default.xml, mapred-site.xml, yarn-default.xml, yarn-site.xml, hdfs-default.xml, hdfs-site.xml\nfs: org.apache.hadoop.fs.FileSystem \u003d DFS[DFSClient[clientName\u003dDFSClient_NONMAPREDUCE_1288676771_34, ugi\u003dzeppelin@EXAMPLE.COM (auth:KERBEROS)]]\noutput: org.apache.hadoop.fs.FSDataOutputStream \u003d FSDataOutputStream{wrappedStream\u003dDFSOutputStream:block\u003d\u003dnull}\nwriter: java.io.PrintWriter \u003d java.io.PrintWriter@34488d1e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1533536053997_1614284374",
+      "id": "20180806-061413_1553584986",
+      "dateCreated": "2018-08-06 06:14:13.997",
+      "dateStarted": "2018-08-06 11:20:01.068",
+      "dateFinished": "2018-08-06 11:20:02.516",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Load data into a Spark DataFrame",
+      "text": "%spark2.spark\n\nval path \u003d \"/tmp/svepisodes.json\"\nval svEpisodes \u003d spark.read.json(path)         // Create a DataFrame from JSON data (automatically infer schema and data types)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:02.569",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "path: String \u003d /tmp/svepisodes.json\nsvEpisodes: org.apache.spark.sql.DataFrame \u003d [airdate: string, airstamp: string ... 8 more fields]\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d167"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821080_-1769341158",
+      "id": "20161012-200853_1560821654",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:02.624",
+      "dateFinished": "2018-08-06 11:20:03.129",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "What are Datasets and DataFrames?",
+      "text": "%md\n\n**Datasets** and **DataFrames** are distributed collections of data created from a variety of sources: JSON and XML files, tables in Hive, external databases and more. Conceptually, they are equivalent to a table in a relational database or a DataFrame in R or Python. Key difference between the  Dataset and the DataFrame is that Datasets are strongly typed.\n\nThere are complex manipulations possible on Datasets and DataFrames, however they are beyond this quick guide.\n\nTo learn more about Datasets and DataFrames checkout this  [link](http://spark.apache.org/docs/2.0.0/sql-programming-guide.html#datasets-and-dataframes).",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:03.224",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003e\u003cstrong\u003eDatasets\u003c/strong\u003e and \u003cstrong\u003eDataFrames\u003c/strong\u003e are distributed collections of data created from a variety of sources: JSON and XML files, tables in Hive, external databases and more. Conceptually, they are equivalent to a table in a relational database or a DataFrame in R or Python. Key difference between the  Dataset and the DataFrame is that Datasets are strongly typed.\u003c/p\u003e\n\u003cp\u003eThere are complex manipulations possible on Datasets and DataFrames, however they are beyond this quick guide.\u003c/p\u003e\n\u003cp\u003eTo learn more about Datasets and DataFrames checkout this  \u003ca href\u003d\"http://spark.apache.org/docs/2.0.0/sql-programming-guide.html#datasets-and-dataframes\"\u003elink\u003c/a\u003e.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821081_-1769725907",
+      "id": "20161014-131031_180366265",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:03.288",
+      "dateFinished": "2018-08-06 11:20:03.290",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Print DataFrame Schema",
+      "text": "%spark2.spark\n\nsvEpisodes.printSchema()",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:03.387",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- airdate: string (nullable \u003d true)\n |-- airstamp: string (nullable \u003d true)\n |-- airtime: string (nullable \u003d true)\n |-- id: long (nullable \u003d true)\n |-- name: string (nullable \u003d true)\n |-- number: long (nullable \u003d true)\n |-- runtime: long (nullable \u003d true)\n |-- season: long (nullable \u003d true)\n |-- summary: string (nullable \u003d true)\n |-- url: string (nullable \u003d true)\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821081_-1769725907",
+      "id": "20161012-202011_596248668",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:03.453",
+      "dateFinished": "2018-08-06 11:20:03.653",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Data Description",
+      "text": "%angular\n\n\u003c!DOCTYPE html\u003e\n\u003chtml\u003e\n\u003chead\u003e\n\u003cstyle\u003e\ntable {\n    font-family: arial, sans-serif;\n    border-collapse: collapse;\n    width: 70%;\n}\n\ntd, th {\n    border: 1px solid #dddddd;\n    text-align: left;\n    padding: 8px;\n}\n\ntr:nth-child(even) {\n    background-color: #dddddd;\n}\n\u003c/style\u003e\n\u003c/head\u003e\n\n\u003ctable\u003e\n\u003ctbody\u003e\n\u003ctr\u003e\n  \u003cth\u003e\u003c/th\u003e\n  \u003cth\u003eColumn Name\u003c/th\u003e\n  \u003cth\u003eDescription\u003c/th\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e1\u003c/td\u003e\n  \u003ctd\u003eAirdate\u003c/td\u003e\n  \u003ctd\u003eDate when an episode was aired\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e2\u003c/td\u003e\n  \u003ctd\u003eAirstamp\u003c/td\u003e\n  \u003ctd\u003eTimestamp when an episode was aired\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e3\u003c/td\u003e\n  \u003ctd\u003eAirtime\u003c/td\u003e\n  \u003ctd\u003eLength of an actual episode airtime (no commercials)\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e4\u003c/td\u003e\n  \u003ctd\u003eId\u003c/td\u003e\n  \u003ctd\u003eUnique show id\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e5\u003c/td\u003e\n  \u003ctd\u003eName\u003c/td\u003e\n  \u003ctd\u003eName of an episode \u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e6\u003c/td\u003e\n  \u003ctd\u003eNumber\u003c/td\u003e\n  \u003ctd\u003eEpisode number\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e7\u003c/td\u003e\n  \u003ctd\u003eRuntime\u003c/td\u003e\n  \u003ctd\u003eTotal length of an episode (including commercials)\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e8\u003c/td\u003e\n  \u003ctd\u003eSeason\u003c/td\u003e\n  \u003ctd\u003eShow season\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e9\u003c/td\u003e\n  \u003ctd\u003eSummary\u003c/td\u003e\n  \u003ctd\u003eBrief summary of an episode\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e10\u003c/td\u003e\n  \u003ctd\u003eUrl\u003c/td\u003e\n  \u003ctd\u003eUrl where more information is available online about an episode\u003c/td\u003e\n\u003c/tr\u003e\n\u003c/tbody\u003e\u003c/table\u003e\n\n\u003c/body\u003e\n\u003c/html\u003e\n",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:03.753",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/undefined",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "completionSupport": false
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "ANGULAR",
+            "data": "\u003c!DOCTYPE html\u003e\n\u003chtml\u003e\n\u003chead\u003e\n\u003cstyle\u003e\ntable {\n    font-family: arial, sans-serif;\n    border-collapse: collapse;\n    width: 70%;\n}\n\ntd, th {\n    border: 1px solid #dddddd;\n    text-align: left;\n    padding: 8px;\n}\n\ntr:nth-child(even) {\n    background-color: #dddddd;\n}\n\u003c/style\u003e\n\u003c/head\u003e\n\n\u003ctable\u003e\n\u003ctbody\u003e\n\u003ctr\u003e\n  \u003cth\u003e\u003c/th\u003e\n  \u003cth\u003eColumn Name\u003c/th\u003e\n  \u003cth\u003eDescription\u003c/th\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e1\u003c/td\u003e\n  \u003ctd\u003eAirdate\u003c/td\u003e\n  \u003ctd\u003eDate when an episode was aired\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e2\u003c/td\u003e\n  \u003ctd\u003eAirstamp\u003c/td\u003e\n  \u003ctd\u003eTimestamp when an episode was aired\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e3\u003c/td\u003e\n  \u003ctd\u003eAirtime\u003c/td\u003e\n  \u003ctd\u003eLength of an actual episode airtime (no commercials)\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e4\u003c/td\u003e\n  \u003ctd\u003eId\u003c/td\u003e\n  \u003ctd\u003eUnique show id\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e5\u003c/td\u003e\n  \u003ctd\u003eName\u003c/td\u003e\n  \u003ctd\u003eName of an episode \u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e6\u003c/td\u003e\n  \u003ctd\u003eNumber\u003c/td\u003e\n  \u003ctd\u003eEpisode number\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e7\u003c/td\u003e\n  \u003ctd\u003eRuntime\u003c/td\u003e\n  \u003ctd\u003eTotal length of an episode (including commercials)\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e8\u003c/td\u003e\n  \u003ctd\u003eSeason\u003c/td\u003e\n  \u003ctd\u003eShow season\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e9\u003c/td\u003e\n  \u003ctd\u003eSummary\u003c/td\u003e\n  \u003ctd\u003eBrief summary of an episode\u003c/td\u003e\n\u003c/tr\u003e\u003ctr\u003e\n  \u003ctd\u003e10\u003c/td\u003e\n  \u003ctd\u003eUrl\u003c/td\u003e\n  \u003ctd\u003eUrl where more information is available online about an episode\u003c/td\u003e\n\u003c/tr\u003e\n\u003c/tbody\u003e\u003c/table\u003e\n\n\u003c/body\u003e\n\u003c/html\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821081_-1769725907",
+      "id": "20161014-140056_345247395",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:03.817",
+      "dateFinished": "2018-08-06 11:20:03.820",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Show DataFrame Contents",
+      "text": "%spark2.spark\n\nsvEpisodes.show()",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:03.917",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+----------+--------------------+-------+------+--------------------+------+-------+------+--------------------+--------------------+\n|   airdate|            airstamp|airtime|    id|                name|number|runtime|season|             summary|                 url|\n+----------+--------------------+-------+------+--------------------+------+-------+------+--------------------+--------------------+\n|2014-04-06|2014-04-06T22:00:...|  22:00| 10897|Minimum Viable Pr...|     1|     30|     1|Attending an elab...|http://www.tvmaze...|\n|2014-04-13|2014-04-13T22:00:...|  22:00| 10898|       The Cap Table|     2|     30|     1|After a celebrato...|http://www.tvmaze...|\n|2014-04-20|2014-04-20T22:00:...|  22:00| 10899|Articles of Incor...|     3|     30|     1|While Gavin Belso...|http://www.tvmaze...|\n|2014-04-27|2014-04-27T22:00:...|  22:00| 10900|    Fiduciary Duties|     4|     30|     1|At Peter\u0027s toga p...|http://www.tvmaze...|\n|2014-05-04|2014-05-04T22:00:...|  22:00| 10901|      Signaling Risk|     5|     30|     1|Erlich  convinces...|http://www.tvmaze...|\n|2014-05-11|2014-05-11T22:00:...|  22:00| 10902|Third Party Insou...|     6|     30|     1|Richard feels thr...|http://www.tvmaze...|\n|2014-05-18|2014-05-18T22:00:...|  22:00| 10903|    Proof of Concept|     7|     30|     1|At TechCrunch Dis...|http://www.tvmaze...|\n|2014-06-01|2014-06-01T22:00:...|  22:00| 10904|Optimal Tip-to-Ti...|     8|     30|     1|Poised to compete...|http://www.tvmaze...|\n|2015-04-12|2015-04-12T22:00:...|  22:00|117409|   Sand Hill Shuffle|     1|     30|     2|Season 2 begins w...|http://www.tvmaze...|\n|2015-04-19|2015-04-19T22:00:...|  22:00|142992| Runaway Devaluation|     2|     30|     2|Pied Piper could ...|http://www.tvmaze...|\n|2015-04-26|2015-04-26T22:00:...|  22:00|142993|           Bad Money|     3|     30|     2|Richard mulls a p...|http://www.tvmaze...|\n|2015-05-03|2015-05-03T22:00:...|  22:00|142994|            The Lady|     4|     30|     2|Richard butts hea...|http://www.tvmaze...|\n|2015-05-10|2015-05-10T22:00:...|  22:00|153965|        Server Space|     5|     30|     2|Gavin creates int...|http://www.tvmaze...|\n|2015-05-17|2015-05-17T22:00:...|  22:00|154580|            Homicide|     6|     30|     2|Erlich runs into ...|http://www.tvmaze...|\n|2015-05-24|2015-05-24T22:00:...|  22:00|155129|       Adult Content|     7|     30|     2|The team fields j...|http://www.tvmaze...|\n|2015-05-31|2015-05-31T22:00:...|  22:00|155130| White Hat/Black Hat|     8|     30|     2|Richard gets para...|http://www.tvmaze...|\n|2015-06-07|2015-06-07T22:00:...|  22:00|155199| Binding Arbitration|     9|     30|     2|Erlich wants to t...|http://www.tvmaze...|\n|2015-06-14|2015-06-14T22:00:...|  22:00|155200|Two Days of The C...|    10|     30|     2|As the guys await...|http://www.tvmaze...|\n|2016-04-24|2016-04-24T22:00:...|  22:00|560883|    Founder Friendly|     1|     30|     3|After being uncer...|http://www.tvmaze...|\n|2016-05-01|2016-05-01T22:00:...|  22:00|668661|      Two in the Box|     2|     30|     3|The new and impro...|http://www.tvmaze...|\n+----------+--------------------+-------+------+--------------------+------+-------+------+--------------------+--------------------+\nonly showing top 20 rows\n\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d168"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821082_-1768571661",
+      "id": "20161012-234401_1548074862",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:03.995",
+      "dateFinished": "2018-08-06 11:20:04.327",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Is there a more interactive way to display query results?",
+      "text": "%md\n\nShort answer, yes! The data displayed in the paragraph above isn\u0027t too interactive. To have a more dynamic experience, let\u0027s create a temporary (in-memory) view that we can query against and interact with the resulting data in a table or graph format. The temporary view will allow us to run SQL queries to get back results.\n\nNote that the temporary view will reside in memory as long as the Spark session is alive.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:04.395",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eShort answer, yes! The data displayed in the paragraph above isn\u0027t too interactive. To have a more dynamic experience, let\u0027s create a temporary (in-memory) view that we can query against and interact with the resulting data in a table or graph format. The temporary view will allow us to run SQL queries to get back results.\u003c/p\u003e\n\u003cp\u003eNote that the temporary view will reside in memory as long as the Spark session is alive.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821082_-1768571661",
+      "id": "20161013-005846_439497469",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:04.467",
+      "dateFinished": "2018-08-06 11:20:04.470",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Create a Temporary View",
+      "text": "%spark2.spark\n\n// Creates a temporary view\nsvEpisodes.createOrReplaceTempView(\"svepisodes\")",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:04.566",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "title": true,
+        "results": [],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821083_-1768956409",
+      "id": "20161012-202125_3295223",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:04.652",
+      "dateFinished": "2018-08-06 11:20:04.878",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "So now what?",
+      "text": "%md\n\nAt this point we can run queries using a familiar SQL syntax against our newly registered `svepisodes` table. \n\nNote that although we are using a SQL syntax in the following paragraph it is translated and executed using the Spark engine with all the expected optimizations.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:04.951",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eAt this point we can run queries using a familiar SQL syntax against our newly registered \u003ccode\u003esvepisodes\u003c/code\u003e table.\u003c/p\u003e\n\u003cp\u003eNote that although we are using a SQL syntax in the following paragraph it is translated and executed using the Spark engine with all the expected optimizations.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821083_-1768956409",
+      "id": "20161013-182547_1601163342",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:05.013",
+      "dateFinished": "2018-08-06 11:20:05.015",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "View Data in an Interactive Table Format",
+      "text": "%spark2.sql\n\nSELECT * FROM svepisodes ORDER BY season, number",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:05.112",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/sql",
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [
+                {
+                  "name": "airdate",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              ],
+              "values": [
+                {
+                  "name": "airstamp",
+                  "index": 1.0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [],
+              "scatter": {
+                "xAxis": {
+                  "name": "airdate",
+                  "index": 0.0,
+                  "aggr": "sum"
+                },
+                "yAxis": {
+                  "name": "airstamp",
+                  "index": 1.0,
+                  "aggr": "sum"
+                }
+              },
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "airdate": "string",
+                      "airstamp": "string",
+                      "airtime": "string",
+                      "id": "string",
+                      "name": "string",
+                      "number": "string",
+                      "runtime": "string",
+                      "season": "string",
+                      "summary": "string",
+                      "url": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "sql",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "airdate\tairstamp\tairtime\tid\tname\tnumber\truntime\tseason\tsummary\turl\n2014-04-06\t2014-04-06T22:00:00-04:00\t22:00\t10897\tMinimum Viable Product\t1\t30\t1\tAttending an elaborate launch party, Richard  and his computer programmer friends - Big Head, Dinesh  and Gilfoyle  - dream of making it big. Instead, they\u0027re living in the communal Hacker Hostel owned by former programmer Erlich, who gets to claim ten percent of anything they invent there. When it becomes clear that Richard has developed a powerful compression algorithm for his website, Pied Piper, he finds himself courted by Gavin Belson, his egomaniacal corporate boss, who offers a $10 million buyout by his firm, Hooli. But Richard holds back when well-known investor Peter Gregory  makes a counteroffer.\thttp://www.tvmaze.com/episodes/10897/silicon-valley-1x01-minimum-viable-product\n2014-04-13\t2014-04-13T22:00:00-04:00\t22:00\t10898\tThe Cap Table\t2\t30\t1\tAfter a celebratory party at the Hacker Hostel, Richard and Erlich learn that Peter Gregory won\u0027t pay up until they deliver a viable business plan that includes a slimmed-downed staff. A desperate Richard hires former Belson underling Jared, and they set about trying to trim the fat. While Gilfoyle and Dinesh prove essential, Big Head\u0027s place in the company is less certain.\thttp://www.tvmaze.com/episodes/10898/silicon-valley-1x02-the-cap-table\n2014-04-20\t2014-04-20T22:00:00-04:00\t22:00\t10899\tArticles of Incorporation\t3\t30\t1\tWhile Gavin Belson begins to hype Nucleus, a competing compression platform, Richard learns that the name Pied Piper is already registered to a sprinkler company, forcing him to negotiate. Meanwhile, Erlich goes on a vision quest for a new company name, and Peter Gregory proves elusive when one of his companies asks for money.\thttp://www.tvmaze.com/episodes/10899/silicon-valley-1x03-articles-of-incorporation\n2014-04-27\t2014-04-27T22:00:00-04:00\t22:00\t10900\tFiduciary Duties\t4\t30\t1\tAt Peter\u0027s toga party, Richard drunkenly promises to make Erlich a board member, which he regrets the next morning. After being unassigned at Hooli, Big Head finds others like him who have made careers out of doing nothing. Richard struggles to put Pied Piper\u0027s vision into words for a presentation without Erlich; later, he discovers an interesting connection between Peter and Gavin Belson.\thttp://www.tvmaze.com/episodes/10900/silicon-valley-1x04-fiduciary-duties\n2014-05-04\t2014-05-04T22:00:00-04:00\t22:00\t10901\tSignaling Risk\t5\t30\t1\tErlich  convinces a graffiti artist to create Pied Piper\u0027s logo, with controversial results. Jared  tries to make the company more efficient. After Gavin Belson  and Peter Gregory  unexpectedly come face-to-face, Richard  learns that he only has eight weeks to prepare for a live demo at TechCrunch Disrupt.\thttp://www.tvmaze.com/episodes/10901/silicon-valley-1x05-signaling-risk\n2014-05-11\t2014-05-11T22:00:00-04:00\t22:00\t10902\tThird Party Insourcing\t6\t30\t1\tRichard feels threatened when the team hires \"The Carver\", a hacker with a notorious reputation, to help with Pied Piper\u0027s cloud. Jared finds himself taken for a ride when he seeks out Peter Gregory\u0027s signature. Erlich and Dinesh  compete for the attention of Tara, Gilfoyle\u0027s  visiting girlfriend. Later, Dinesh faces a sexual dilemma.\thttp://www.tvmaze.com/episodes/10902/silicon-valley-1x06-third-party-insourcing\n2014-05-18\t2014-05-18T22:00:00-04:00\t22:00\t10903\tProof of Concept\t7\t30\t1\tAt TechCrunch Disrupt, Richard feels the pressure to finish his demo, but finds himself distracted by a girl he dated briefly, who\u0027s now spreading rumors about him. Jared worries that Monica  is taking his place in the company. Dinesh develops a crush on a girl at a neighboring booth. Erlich\u0027s scandalous past connection to one of the judges threatens Pied Piper\u0027s chances.\thttp://www.tvmaze.com/episodes/10903/silicon-valley-1x07-proof-of-concept\n2014-06-01\t2014-06-01T22:00:00-04:00\t22:00\t10904\tOptimal Tip-to-Tip Efficiency\t8\t30\t1\tPoised to compete at TechCrunch Disrupt, the guys of Pied Piper become worried after an impressive presentation by Gavin Belson. As Jared tries to pivot the company, Richard is inspired to make big changes at the last minute.\thttp://www.tvmaze.com/episodes/10904/silicon-valley-1x08-optimal-tip-to-tip-efficiency\n2015-04-12\t2015-04-12T22:00:00-04:00\t22:00\t117409\tSand Hill Shuffle\t1\t30\t2\tSeason 2 begins with the Pied Piper guys being wined and dined by every venture capitalist under the sun, while Monica adjusts to a new managing partner at Raviga as the company faces major changes.\thttp://www.tvmaze.com/episodes/117409/silicon-valley-2x01-sand-hill-shuffle\n2015-04-19\t2015-04-19T22:00:00-04:00\t22:00\t142992\tRunaway Devaluation\t2\t30\t2\tPied Piper could go under if Richard and the guys can\u0027t find legal and financial help in the wake of Hooli\u0027s bombshell. Meanwhile, Dinesh tries to thwart a fund-raising campaign for his cousin\u0027s new app; and Monica tries to keep her interest in Pied Piper separate from her job.\thttp://www.tvmaze.com/episodes/142992/silicon-valley-2x02-runaway-devaluation\n2015-04-26\t2015-04-26T22:00:00-04:00\t22:00\t142993\tBad Money\t3\t30\t2\tRichard mulls a proposal by Gavin, but also considers a pitch from Russ Hanneman about backing Pied Piper. Meanwhile, Monica learns surprising news about Richard\u0027s deal with Hooli; and Gilfoyle and Dinesh go to extremes to get what they want.\thttp://www.tvmaze.com/episodes/142993/silicon-valley-2x03-bad-money\n2015-05-03\t2015-05-03T22:00:00-04:00\t22:00\t142994\tThe Lady\t4\t30\t2\tRichard butts heads with Erlich over a prospective hire, while Dinesh and Gilfoyle become suspicious that a new employee they recommended is commanding a higher salary. Big Head gets a surprising promotion at Hooli. At a board meeting, Monica and Richard find themselves outvoted; Jared institutes a workplace harassment policy.\thttp://www.tvmaze.com/episodes/142994/silicon-valley-2x04-the-lady\n2015-05-10\t2015-05-10T22:00:00-04:00\t22:00\t153965\tServer Space\t5\t30\t2\tGavin creates interference that hinders Pied Piper\u0027s expansion. Meanwhile, the guys could be threatened by a nosy neighbor; Guilfoyle sets out to build servers; Richard\u0027s reluctant to let Jared move in; and Big Head\u0027s leadership skills are suspect.\thttp://www.tvmaze.com/episodes/153965/silicon-valley-2x05-server-space\n2015-05-17\t2015-05-17T22:00:00-04:00\t22:00\t154580\tHomicide\t6\t30\t2\tErlich runs into an old protégé who\u0027s now an energy drink billionaire when Monica urges the guys to pursue a livestream opportunity, but Richard learns their friendship isn\u0027t what Erlich thinks it is. Meanwhile, Jared wants Carla and Monica to be friends.\thttp://www.tvmaze.com/episodes/154580/silicon-valley-2x06-homicide\n2015-05-24\t2015-05-24T22:00:00-04:00\t22:00\t155129\tAdult Content\t7\t30\t2\tThe team fields job offers and Russ is distracted by financial news, but Richard realizes Pied Piper could fold if it doesn\u0027t merge with a hated rival. Meanwhile, Dinesh tries to woo a woman online; and Gavin looks on the bright side of Nucleus\u0027 failure.\thttp://www.tvmaze.com/episodes/155129/silicon-valley-2x07-adult-content\n2015-05-31\t2015-05-31T22:00:00-04:00\t22:00\t155130\tWhite Hat/Black Hat\t8\t30\t2\tRichard gets paranoid about security after he takes pity on a competitor and inadvertently starts a feud. Meanwhile, Jared fibs about Pied Piper\u0027s size; and Gavin looks for a scapegoat when he feels pressure from board members.\thttp://www.tvmaze.com/episodes/155130/silicon-valley-2x08-white-hatblack-hat\n2015-06-07\t2015-06-07T22:00:00-04:00\t22:00\t155199\tBinding Arbitration\t9\t30\t2\tErlich wants to testify when Pied Piper and Hooli enter binding arbitration, but Richard worries that his rival\u0027s claims could have merit. Meanwhile, Jared, Dinesh and Gilfoyle debate a philosophical theory; and Big Head gets a boost.\thttp://www.tvmaze.com/episodes/155199/silicon-valley-2x09-binding-arbitration\n2015-06-14\t2015-06-14T22:00:00-04:00\t22:00\t155200\tTwo Days of The Condor\t10\t30\t2\tAs the guys await the verdict on Pied Piper\u0027s fate, an unexpected real-life drama draws a spike in traffic to their livestream and leaves them fighting to hold things together - literally. While Erlich considers his future, Richard scrambles to save Pied Piper\u0027s.\thttp://www.tvmaze.com/episodes/155200/silicon-valley-2x10-two-days-of-the-condor\n2016-04-24\t2016-04-24T22:00:00-04:00\t22:00\t560883\tFounder Friendly\t1\t30\t3\tAfter being unceremoniously fired, an angry Richard faces a tough decision: accept the diminished role of CTO, or leave Pied Piper for good. Erlich takes a shine to Jack Barker, Laurie\u0027s new choice of CEO, while Dinesh and Gilfoyle weigh their options in Richard\u0027s absence. At Hooli, Gavin tries to improve his image by admitting failure, and Big Head gets wind of major changes.\thttp://www.tvmaze.com/episodes/560883/silicon-valley-3x01-founder-friendly\n2016-05-01\t2016-05-01T22:00:00-04:00\t22:00\t668661\tTwo in the Box\t2\t30\t3\tThe new and improved Pied Piper impresses Dinesh and Gilfoyle, but worries Richard; Jared and Erlich both face housing issues; Gavin suggests a controversial move.\thttp://www.tvmaze.com/episodes/668661/silicon-valley-3x02-two-in-the-box\n2016-05-08\t2016-05-08T22:00:00-04:00\t22:00\t668662\tMeinertzhagen\u0027s Haversack\t3\t30\t3\tRichard searches for a way around Jack; Gilfoyle opens himself up to recruiters; Dinesh draws unwanted attention from a recent purchase. \thttp://www.tvmaze.com/episodes/668662/silicon-valley-3x03-meinertzhagens-haversack\n2016-05-15\t2016-05-15T22:00:00-04:00\t22:00\t670680\tMaleant Data Systems Solutions\t4\t30\t3\tThe Pied Piper guys struggle to phone it in; Erlich faces competition; Monica takes a stand; Gavin makes a decision about Nucleus.\thttp://www.tvmaze.com/episodes/670680/silicon-valley-3x04-maleant-data-systems-solutions\n2016-05-22\t2016-05-22T22:00:00-04:00\t22:00\t670682\tThe Empty Chair\t5\t30\t3\tRichard lets his ego get in the way at an interview; Dinesh, Gilfoyle and Jared misplace hardware; Erlich pitches his plans to Big Head.\thttp://www.tvmaze.com/episodes/670682/silicon-valley-3x05-the-empty-chair\n2016-05-29\t2016-05-29T22:00:00-04:00\t22:00\t670681\tBachmanity Insanity\t6\t30\t3\tRichard\u0027s new relationship is threatened by neuroses; Big Head and Erlich\u0027s launch party has snags; Dinesh falls for a foreign coworker. \thttp://www.tvmaze.com/episodes/670681/silicon-valley-3x06-bachmanity-insanity\n2016-06-05\t2016-06-05T22:00:00-04:00\t22:00\t717453\tTo Build a Better Beta\t7\t30\t3\tWhen the guys decide to release the beta version of Pied Piper, they receive an unexpected response. With a limited number of beta invites each, Dinesh worries about his lack of friends, while Gilfoyle looks to catch him in a lie. Monica worries about how to deliver criticism. Facing financial woes, Erlich considers a big decision, and Gavin challenges the Nucleus team to do the impossible.\thttp://www.tvmaze.com/episodes/717453/silicon-valley-3x07-to-build-a-better-beta\n2016-06-12\t2016-06-12T22:00:00-04:00\t22:00\t729570\tBachman\u0027s Earning\u0027s Over-ride\t8\t30\t3\tErlich struggles to come clean to Richard, who is forced to make a choice between their friendship and the company\u0027s future. Jared\u0027s new Pied Piper apparel makes a splash, and divides Dinesh and Gilfoyle. As Gavin faces major life changes, the guys celebrate a rare victory.\thttp://www.tvmaze.com/episodes/729570/silicon-valley-3x08-bachmans-earnings-over-ride\n2016-06-19\t2016-06-19T22:00:00-04:00\t22:00\t729571\tDaily Active Users\t9\t30\t3\tUpon discovering surprising stats, Richard attempts to bridge the gap between Pied Piper and its users, leading Jared to take drastic measures to hold everything together. Gavin learns secrets about the competition and decides to bring in a new face to reclaim his former glory.\thttp://www.tvmaze.com/episodes/729571/silicon-valley-3x09-daily-active-users\n2016-06-26\t2016-06-26T22:00:00-04:00\t22:00\t729572\tThe Uptick\t10\t30\t3\tWith Pied Piper\u0027s future in question, Erlich\u0027s publicity success leaves Richard in a moral quandary, just as Dinesh\u0027s video-chat app gathers speed. While Laurie prepares to jump ship, Gavin\u0027s comeback at Hooli is threatened by his displays of grandeur.\thttp://www.tvmaze.com/episodes/729572/silicon-valley-3x10-the-uptick\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d169"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821083_-1768956409",
+      "id": "20161013-005646_1818766386",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:05.173",
+      "dateFinished": "2018-08-06 11:20:05.317",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Can we do something useful?",
+      "text": "%md\n\nOK, so now let\u0027s run a slightly more complex SQL query on the underlying table data.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:05.373",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eOK, so now let\u0027s run a slightly more complex SQL query on the underlying table data.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821084_-1770880154",
+      "id": "20161013-182951_885833546",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:05.445",
+      "dateFinished": "2018-08-06 11:20:05.447",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Total Number of Episodes",
+      "text": "%spark2.sql\n\nSELECT count(1) AS TotalNumEpisodes FROM svepisodes",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:05.544",
+      "config": {
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/sql",
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [
+                {
+                  "name": "TotalNumEpisodes",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              ],
+              "values": [],
+              "groups": [],
+              "scatter": {
+                "xAxis": {
+                  "name": "TotalNumEpisodes",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              },
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "TotalNumEpisodes": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "sql",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "TotalNumEpisodes\n28\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d170"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821084_-1770880154",
+      "id": "20161017-235756_1441150850",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:05.625",
+      "dateFinished": "2018-08-06 11:20:05.764",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Number of Episodes per Season",
+      "text": "%spark2.sql \n\nSELECT season, count(number) as episodes FROM svepisodes GROUP BY season",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:13.553",
+      "config": {
+        "colWidth": 8.0,
+        "editorMode": "ace/mode/sql",
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "multiBarChart",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [
+                {
+                  "name": "season",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              ],
+              "values": [
+                {
+                  "name": "episodes",
+                  "index": 1.0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [],
+              "scatter": {
+                "xAxis": {
+                  "name": "season",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              },
+              "setting": {
+                "multiBarChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "sql",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "season\tepisodes\n1\t8\n3\t10\n2\t10\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d171",
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d172",
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d173",
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d174",
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d175"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821085_-1771264903",
+      "id": "20161012-202204_1707933023",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:05.886",
+      "dateFinished": "2018-08-06 11:20:06.683",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Word Count on Episode Summaries",
+      "text": "%md\n\nNow let\u0027s perform a basic word-count on the summary column and find out which words occur most frequently. This should give us some indication on the popularity of certain characters and other relevant keywords in the context of the Sillicon Valley show.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:06.686",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eNow let\u0027s perform a basic word-count on the summary column and find out which words occur most frequently. This should give us some indication on the popularity of certain characters and other relevant keywords in the context of the Sillicon Valley show.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821085_-1771264903",
+      "id": "20161013-010351_1570854534",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:06.838",
+      "dateFinished": "2018-08-06 11:20:06.840",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Raw Word Count",
+      "text": "%spark2.spark\n\nimport org.apache.spark.sql.functions._                        // Import additional helper functions\n\nval svSummaries \u003d svEpisodes.select(\"summary\").as[String]      // Convert to String type (becomes a Dataset)\n\n// Extract individual words\nval words \u003d svSummaries.\nflatMap(_.split(\"\\\\s+\")).\nfilter(_ !\u003d \"\").\nmap(_.toLowerCase())                                 // Lowercase\n\n// Word count\nwords.groupByKey(value \u003d\u003e value).\ncount().\norderBy($\"count(1)\" desc).show()\n// Display results",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:06.937",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "import org.apache.spark.sql.functions._\nsvSummaries: org.apache.spark.sql.Dataset[String] \u003d [summary: string]\nwords: org.apache.spark.sql.Dataset[String] \u003d [value: string]\nwarning: there was one feature warning; re-run with -feature for details\n+-------+--------+\n|  value|count(1)|\n+-------+--------+\n|      a|      59|\n|     to|      48|\n|    and|      40|\n|    the|      38|\n|richard|      26|\n|   pied|      24|\n|    his|      16|\n| erlich|      16|\n|     of|      16|\n| dinesh|      16|\n|  gavin|      14|\n|     at|      14|\n|     by|      12|\n|    for|      12|\n|     in|      12|\n|  piper|      12|\n|  jared|      11|\n|    big|      11|\n|  about|      10|\n|     is|       9|\n+-------+--------+\nonly showing top 20 rows\n\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d176"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821085_-1771264903",
+      "id": "20161013-000142_472015281",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:07.000",
+      "dateFinished": "2018-08-06 11:20:09.244",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Can we improve this?",
+      "text": "%md\n\nAs you can see there are plenty of stop words and punctuation marks that surface to the top. Let\u0027s clean this up a bit by creating a basic stop word list and a punctuation mark list that we\u0027ll use as basic filters before we aggregate and order the words again.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:09.302",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eAs you can see there are plenty of stop words and punctuation marks that surface to the top. Let\u0027s clean this up a bit by creating a basic stop word list and a punctuation mark list that we\u0027ll use as basic filters before we aggregate and order the words again.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821086_-1770110656",
+      "id": "20161013-010505_1972414834",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:09.356",
+      "dateFinished": "2018-08-06 11:20:09.358",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "More Sophisticated Filtering",
+      "text": "%spark2.spark\n\nval stopWords \u003d List(\"a\", \"an\", \"to\", \"and\", \"the\", \"of\", \"in\", \"for\", \"by\", \"at\")      // Basic set of stop words\nval punctuationMarks \u003d List(\"-\", \",\", \";\", \":\", \".\", \"?\", \"!\")                          // Basic set of punctuation marks\n\n// Filter out stop words and punctuation marks\nval wordsFiltered \u003d words.\nfilter(!stopWords.contains(_)).\nfilter(!punctuationMarks.contains(_))                                              // Remove punctuation marks",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:09.456",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "stopWords: List[String] \u003d List(a, an, to, and, the, of, in, for, by, at)\npunctuationMarks: List[String] \u003d List(-, ,, ;, :, ., ?, !)\nwordsFiltered: org.apache.spark.sql.Dataset[String] \u003d [value: string]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821086_-1770110656",
+      "id": "20161013-003539_1918843179",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:09.510",
+      "dateFinished": "2018-08-06 11:20:10.184",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Improved Word Count",
+      "text": "%spark2.spark\n\n// Word count\nwordsFiltered.\ngroupBy($\"value\" as \"word\").\nagg(count(\"*\") as \"occurences\").\norderBy($\"occurences\" desc).\nshow()                                               // Display results",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:10.210",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "warning: there was one feature warning; re-run with -feature for details\n+----------+----------+\n|      word|occurences|\n+----------+----------+\n|   richard|        26|\n|      pied|        24|\n|    dinesh|        16|\n|    erlich|        16|\n|       his|        16|\n|     gavin|        14|\n|     piper|        12|\n|     jared|        11|\n|       big|        11|\n|     about|        10|\n|      when|         9|\n|      with|         9|\n|    monica|         9|\n|  gilfoyle|         9|\n|      that|         9|\n|       new|         9|\n|        is|         9|\n|      guys|         9|\n|meanwhile,|         8|\n|     while|         8|\n+----------+----------+\nonly showing top 20 rows\n\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d177"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821086_-1770110656",
+      "id": "20161013-004841_1248757887",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:10.301",
+      "dateFinished": "2018-08-06 11:20:12.798",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Note on the Results",
+      "text": "%md\n\nLooks like Richard, Pied Piper, Dinesh, Erlich, Gavin and Jared are the key words in the Sillicon Valley show. Looks like a lot revolves around Richard!",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:12.802",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eLooks like Richard, Pied Piper, Dinesh, Erlich, Gavin and Jared are the key words in the Sillicon Valley show. Looks like a lot revolves around Richard!\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821087_-1770495405",
+      "id": "20161014-142139_512800114",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:12.911",
+      "dateFinished": "2018-08-06 11:20:12.914",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Final Comments on Word Count",
+      "text": "%md\n\nAs you can see, there\u0027s more to do with our word list, e.g. Piper and Piper\u0027s should be counted as the same word. There\u0027s more, of course, however this is beyond the scope of this quick intro to Apache Spark.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:13.011",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eAs you can see, there\u0027s more to do with our word list, e.g. Piper and Piper\u0027s should be counted as the same word. There\u0027s more, of course, however this is beyond the scope of this quick intro to Apache Spark.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821087_-1770495405",
+      "id": "20161013-010754_1315051750",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:13.068",
+      "dateFinished": "2018-08-06 11:20:13.070",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Additional Resources",
+      "text": "%md\n\nWe hope you\u0027ve enjoyed this brief intro to Apache Spark. Below are additional resources that you should find useful:\n\n1. [Hortonworks Apache Spark Tutorials](http://hortonworks.com/tutorials/#tuts-developers) are your natural next step where you can explore Spark in more depth.\n2. [Hortonworks Community Connection (HCC)](https://community.hortonworks.com/spaces/85/data-science.html?type\u003dquestion) is a great resource for questions and answers on Spark, Data Analytics/Science, and many more Big Data topics.\n3. [Hortonworks Apache Spark Docs](http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_spark-component-guide/content/ch_developing-spark-apps.html) - official Spark documentation.\n4. [Hortonworks Apache Zeppelin Docs](http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_zeppelin-component-guide/content/ch_using_zeppelin.html) - official Zeppelin documentation.\n",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:13.167",
+      "config": {
+        "colWidth": 10.0,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eWe hope you\u0027ve enjoyed this brief intro to Apache Spark. Below are additional resources that you should find useful:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003ca href\u003d\"http://hortonworks.com/tutorials/#tuts-developers\"\u003eHortonworks Apache Spark Tutorials\u003c/a\u003e are your natural next step where you can explore Spark in more depth.\u003c/li\u003e\n\u003cli\u003e\u003ca href\u003d\"https://community.hortonworks.com/spaces/85/data-science.html?type\u003dquestion\"\u003eHortonworks Community Connection (HCC)\u003c/a\u003e is a great resource for questions and answers on Spark, Data Analytics/Science, and many more Big Data topics.\u003c/li\u003e\n\u003cli\u003e\u003ca href\u003d\"http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_spark-component-guide/content/ch_developing-spark-apps.html\"\u003eHortonworks Apache Spark Docs\u003c/a\u003e - official Spark documentation.\u003c/li\u003e\n\u003cli\u003e\u003ca href\u003d\"http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_zeppelin-component-guide/content/ch_using_zeppelin.html\"\u003eHortonworks Apache Zeppelin Docs\u003c/a\u003e - official Zeppelin documentation.\u003c/li\u003e\n\u003c/ol\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821087_-1770495405",
+      "id": "20160226-200649_425588199",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:13.228",
+      "dateFinished": "2018-08-06 11:20:13.230",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%angular\n\u003c/br\u003e\n\u003ccenter\u003e\n\u003ca href\u003d\"https://community.hortonworks.com/spaces/85/data-science.html?type\u003dquestion\" target\u003d\u0027_blank\u0027\u003e\n  \u003cimg src\u003d\"http://hortonworks.com/wp-content/uploads/2016/03/logo-hcc.png\" alt\u003d\"HCC\" style\u003d\"width:125px;height:125px;border:0;\" align\u003d\"middle\"\u003e\n\u003c/a\u003e\n\u003c/center\u003e",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:13.328",
+      "config": {
+        "colWidth": 2.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "ANGULAR",
+            "data": "\u003c/br\u003e\n\u003ccenter\u003e\n\u003ca href\u003d\"https://community.hortonworks.com/spaces/85/data-science.html?type\u003dquestion\" target\u003d\u0027_blank\u0027\u003e\n  \u003cimg src\u003d\"http://hortonworks.com/wp-content/uploads/2016/03/logo-hcc.png\" alt\u003d\"HCC\" style\u003d\"width:125px;height:125px;border:0;\" align\u003d\"middle\"\u003e\n\u003c/a\u003e\n\u003c/center\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821088_-1784731114",
+      "id": "20161013-185141_1487979052",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "dateStarted": "2018-08-06 11:20:13.391",
+      "dateFinished": "2018-08-06 11:20:13.395",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 11:20:13.490",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1487287821088_-1784731114",
+      "id": "20161018-143930_1545375880",
+      "dateCreated": "2017-02-17 05:00:21.000",
+      "status": "FINISHED",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Getting Started / Apache Spark in 5 Minutes",
+  "id": "2CBTZPY14",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {
+    "md:shared_process": [],
+    "angular:shared_process": [],
+    "spark2:shared_process": []
+  },
+  "config": {
+    "looknfeel": "default",
+    "personalizedMode": "false",
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}

@@ -1,0 +1,2727 @@
+{
+  "paragraphs": [
+    {
+      "text": "%md\n\n## Spark Core (RDDs) and Spark SQL Module\n#### Analyzing a Text File\n\n**Level**: Beginner\n**Language**: Python\n**Requirements**: \n- [HDP 2.6](http://hortonworks.com/products/sandbox/) (or later) or [HDCloud](https://hortonworks.github.io/hdp-aws/)\n- Spark 2.x\n\n**Author**: Robert Hryniewicz\n**Follow** [@RobertH8z](https://twitter.com/RobertH8z)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:28.294",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "title": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003ch2\u003eSpark Core (RDDs) and Spark SQL Module\u003c/h2\u003e\n\u003ch4\u003eAnalyzing a Text File\u003c/h4\u003e\n\u003cp\u003e\u003cstrong\u003eLevel\u003c/strong\u003e: Beginner\n\u003cbr  /\u003e\u003cstrong\u003eLanguage\u003c/strong\u003e: Python\n\u003cbr  /\u003e\u003cstrong\u003eRequirements\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ca href\u003d\"http://hortonworks.com/products/sandbox/\"\u003eHDP 2.6\u003c/a\u003e (or later) or \u003ca href\u003d\"https://hortonworks.github.io/hdp-aws/\"\u003eHDCloud\u003c/a\u003e\u003c/li\u003e\n\u003cli\u003eSpark 2.x\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003e\u003cstrong\u003eAuthor\u003c/strong\u003e: Robert Hryniewicz\n\u003cbr  /\u003e\u003cstrong\u003eFollow\u003c/strong\u003e \u003ca href\u003d\"https://twitter.com/RobertH8z\"\u003e@RobertH8z\u003c/a\u003e\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163817_1077079436",
+      "id": "20160331-233830_1876799966",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:28.373",
+      "dateFinished": "2018-08-06 13:12:28.376",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Introduction",
+      "text": "%md\nThis lab consists of two parts. In each section you will perform a basic Word Count.\n\nIn **Part 1**, we will introduce **Resilient Distributed Datasets** (RDDs), Spark\u0027s primary low-level abstraction, and several core concepts.\nIn **Part 2**, we will introduce **DataFrames**, a higher-level abstraction than RDDs, along with Spark SQL Module allowing you to use SQL statements to query a temporary view.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:28.473",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 217.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eThis lab consists of two parts. In each section you will perform a basic Word Count.\u003c/p\u003e\n\u003cp\u003eIn \u003cstrong\u003ePart 1\u003c/strong\u003e, we will introduce \u003cstrong\u003eResilient Distributed Datasets\u003c/strong\u003e (RDDs), Spark\u0027s primary low-level abstraction, and several core concepts.\n\u003cbr  /\u003eIn \u003cstrong\u003ePart 2\u003c/strong\u003e, we will introduce \u003cstrong\u003eDataFrames\u003c/strong\u003e, a higher-level abstraction than RDDs, along with Spark SQL Module allowing you to use SQL statements to query a temporary view.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163817_1077079436",
+      "id": "20160331-233830_1038788941",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:28.559",
+      "dateFinished": "2018-08-06 13:12:28.562",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Concepts",
+      "text": "%md\nAt the core of Spark is the notion of a Resilient Distributed Dataset (RDD), which is an immutable and fault-tolerant collection of objects that is partitioned and distributed across multiple physical nodes on a cluster and they run in parallel.\n\nTypically, RDDs are instantiated by loading data from a shared filesystem, HDFS, HBase, or any data source offering a Hadoop InputFormat on a YARN cluster.\n\nOnce an RDD is instantiated, you can apply a **[series of operations](https://spark.apache.org/docs/latest/programming-guide.html#rdd-operations)**.\n\nAll operations fall into one of two types: **[Transformations](https://spark.apache.org/docs/latest/programming-guide.html#transformations)** or **[Actions](https://spark.apache.org/docs/latest/programming-guide.html#actions)**. \n\nTransformation operations, as the name suggests, create new datasets from an existing RDD and build out the processing Directed Acyclic Graph (DAG) that can then be applied on the partitioned dataset across the YARN cluster. An Action operation, on the other hand, executes DAG and returns a value.\n\nIn this lab we will use the following **[Transformations](https://spark.apache.org/docs/latest/programming-guide.html#transformations)**:\n- map(func)\n- filter(func)\n- flatMap(func)\n- reduceByKey(func)\n\nand **[Actions](https://spark.apache.org/docs/latest/programming-guide.html#actions)**:\n\n- collect()\n- count()\n- take()\n- takeOrdered(n, [ordering])\n- countByKey()\n\nA typical Spark application has the following four phases:\n1. Instantiate Input RDDs\n2. Transform RDDs\n3. Persist Intermediate RDDs\n4. Take Action on RDDs",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:28.659",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eAt the core of Spark is the notion of a Resilient Distributed Dataset (RDD), which is an immutable and fault-tolerant collection of objects that is partitioned and distributed across multiple physical nodes on a cluster and they run in parallel.\u003c/p\u003e\n\u003cp\u003eTypically, RDDs are instantiated by loading data from a shared filesystem, HDFS, HBase, or any data source offering a Hadoop InputFormat on a YARN cluster.\u003c/p\u003e\n\u003cp\u003eOnce an RDD is instantiated, you can apply a \u003cstrong\u003e\u003ca href\u003d\"https://spark.apache.org/docs/latest/programming-guide.html#rdd-operations\"\u003eseries of operations\u003c/a\u003e\u003c/strong\u003e.\u003c/p\u003e\n\u003cp\u003eAll operations fall into one of two types: \u003cstrong\u003e\u003ca href\u003d\"https://spark.apache.org/docs/latest/programming-guide.html#transformations\"\u003eTransformations\u003c/a\u003e\u003c/strong\u003e or \u003cstrong\u003e\u003ca href\u003d\"https://spark.apache.org/docs/latest/programming-guide.html#actions\"\u003eActions\u003c/a\u003e\u003c/strong\u003e.\u003c/p\u003e\n\u003cp\u003eTransformation operations, as the name suggests, create new datasets from an existing RDD and build out the processing Directed Acyclic Graph (DAG) that can then be applied on the partitioned dataset across the YARN cluster. An Action operation, on the other hand, executes DAG and returns a value.\u003c/p\u003e\n\u003cp\u003eIn this lab we will use the following \u003cstrong\u003e\u003ca href\u003d\"https://spark.apache.org/docs/latest/programming-guide.html#transformations\"\u003eTransformations\u003c/a\u003e\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003emap(func)\u003c/li\u003e\n\u003cli\u003efilter(func)\u003c/li\u003e\n\u003cli\u003eflatMap(func)\u003c/li\u003e\n\u003cli\u003ereduceByKey(func)\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eand \u003cstrong\u003e\u003ca href\u003d\"https://spark.apache.org/docs/latest/programming-guide.html#actions\"\u003eActions\u003c/a\u003e\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003ecollect()\u003c/li\u003e\n\u003cli\u003ecount()\u003c/li\u003e\n\u003cli\u003etake()\u003c/li\u003e\n\u003cli\u003etakeOrdered(n, [ordering])\u003c/li\u003e\n\u003cli\u003ecountByKey()\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eA typical Spark application has the following four phases:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eInstantiate Input RDDs\u003c/li\u003e\n\u003cli\u003eTransform RDDs\u003c/li\u003e\n\u003cli\u003ePersist Intermediate RDDs\u003c/li\u003e\n\u003cli\u003eTake Action on RDDs\u003c/li\u003e\n\u003c/ol\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163818_1078233682",
+      "id": "20160331-233830_2031164924",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:28.753",
+      "dateFinished": "2018-08-06 13:12:28.756",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "How to run a paragraph?",
+      "text": "%md\nTo run a paragraph in a Zeppelin notebook you can either click the `play` button (blue triangle) on the right-hand side or simply press `Shift + Enter`.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:28.852",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eTo run a paragraph in a Zeppelin notebook you can either click the \u003ccode\u003eplay\u003c/code\u003e button (blue triangle) on the right-hand side or simply press \u003ccode\u003eShift + Enter\u003c/code\u003e.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163818_1078233682",
+      "id": "20160331-233830_981276249",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:28.983",
+      "dateFinished": "2018-08-06 13:12:28.985",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Check Spark Version (should be 2.x)",
+      "text": "%spark2\n\nspark.version",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:29.082",
+      "config": {
+        "editorMode": "ace/mode/scala",
+        "colWidth": 12.0,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "res318: String \u003d 2.3.1.3.0.1.0-46\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163818_1078233682",
+      "id": "20160331-233830_1782991630",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:29.220",
+      "dateFinished": "2018-08-06 13:12:29.462",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md \n\n## Part 1\n#### Introduction to RDDs (Spark Core) with Word Count example",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:29.520",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003ch2\u003ePart 1\u003c/h2\u003e\n\u003ch4\u003eIntroduction to RDDs (Spark Core) with Word Count example\u003c/h4\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163818_1078233682",
+      "id": "20160331-233830_682697678",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:29.640",
+      "dateFinished": "2018-08-06 13:12:29.642",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nIn this section you will perform a basic word count with RDDs.\n\nYou will download external text data file to your sandbox. Then you will perform lexical analysis, or tokenization, by breaking up text into words/tokens.\nThe list of tokens then becomes an input for further processing to this and following sections.\n\nBy the end of this section you should have learned how to perform low-level transformations and actions with Spark RDDs and lambda expressions.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:29.740",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eIn this section you will perform a basic word count with RDDs.\u003c/p\u003e\n\u003cp\u003eYou will download external text data file to your sandbox. Then you will perform lexical analysis, or tokenization, by breaking up text into words/tokens.\n\u003cbr  /\u003eThe list of tokens then becomes an input for further processing to this and following sections.\u003c/p\u003e\n\u003cp\u003eBy the end of this section you should have learned how to perform low-level transformations and actions with Spark RDDs and lambda expressions.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163818_1078233682",
+      "id": "20160331-233830_94748225",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:29.832",
+      "dateFinished": "2018-08-06 13:12:29.834",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Interpreters",
+      "text": "%md\n\nIn the following paragraphs we are going to execute Spark code, run shell commands to download and move files, run sql queries etc. Each paragraph will start with `%` followed by an interpreter name, e.g. `%spark2.pyspark` for a Spark 2.x Python interpreter. Different interpreter names indicate what will be executed: code, markdown, html etc. This allows you to perform data ingestion, munging, wrangling, visualization, analysis, processing and more, all in one place!\n\nThroughtout this notebook we will use the following interpreters:\n\n- `%spark2.pyspark` - Spark Python interpreter to run Spark 2.x code written in Python 2.x\n- `%spark2` - Spark interpreter to run Spark 2.x code written in Scala (we\u0027ll only use to check Spark version)\n- `%spark2.sql` - Spark SQL interprter (to execute SQL queries against temporary tables in Spark 2.x)\n- `%sh` - Shell interpreter to run shell commands\n- `%angular` - Angular interpreter to run Angular and HTML code\n- `%md` - Markdown for displaying formatted text, links, and images\n\nTo learn more about Zeppelin interpreters check out this [link](https://zeppelin.apache.org/docs/0.5.6-incubating/manual/interpreters.html).",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:29.931",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eIn the following paragraphs we are going to execute Spark code, run shell commands to download and move files, run sql queries etc. Each paragraph will start with \u003ccode\u003e%\u003c/code\u003e followed by an interpreter name, e.g. \u003ccode\u003e%spark2.pyspark\u003c/code\u003e for a Spark 2.x Python interpreter. Different interpreter names indicate what will be executed: code, markdown, html etc. This allows you to perform data ingestion, munging, wrangling, visualization, analysis, processing and more, all in one place!\u003c/p\u003e\n\u003cp\u003eThroughtout this notebook we will use the following interpreters:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003e%spark2.pyspark\u003c/code\u003e - Spark Python interpreter to run Spark 2.x code written in Python 2.x\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%spark2\u003c/code\u003e - Spark interpreter to run Spark 2.x code written in Scala (we\u0027ll only use to check Spark version)\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%spark2.sql\u003c/code\u003e - Spark SQL interprter (to execute SQL queries against temporary tables in Spark 2.x)\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%sh\u003c/code\u003e - Shell interpreter to run shell commands\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%angular\u003c/code\u003e - Angular interpreter to run Angular and HTML code\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%md\u003c/code\u003e - Markdown for displaying formatted text, links, and images\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eTo learn more about Zeppelin interpreters check out this \u003ca href\u003d\"https://zeppelin.apache.org/docs/0.5.6-incubating/manual/interpreters.html\"\u003elink\u003c/a\u003e.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163818_1078233682",
+      "id": "20160331-233830_1148035148",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:30.001",
+      "dateFinished": "2018-08-06 13:12:30.004",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Download dataset and move it to HDFS (if supported/available)",
+      "text": "%spark2.pyspark\nimport urllib2\nresponse \u003d urllib2.urlopen(\u0027https://raw.githubusercontent.com/roberthryniewicz/datasets/master/About-Apache-NiFi.txt\u0027)\ncontent \u003d response.read()\nfrom pyspark.sql import Row\ncontent_rdd \u003d sc.parallelize(content.split(\"\\n\"))\ndf \u003d content_rdd.map(lambda x: Row(x)).toDF()\ndf.write.mode(\u0027overwrite\u0027).text(\u0027/tmp/nifi.txt\u0027)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:18:39.747",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/python",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d227",
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d228"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1533537212868_-580087776",
+      "id": "20180806-063332_197151770",
+      "dateCreated": "2018-08-06 06:33:32.868",
+      "dateStarted": "2018-08-06 13:12:30.179",
+      "dateFinished": "2018-08-06 13:12:30.571",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "SparkSession in Zeppelin",
+      "text": "%md\nNote that the main entry point (starting with Spark 2.x) is `spark` (for SparkSession) and it is automatically initialized within Zeppelin.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:30.579",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eNote that the main entry point (starting with Spark 2.x) is \u003ccode\u003espark\u003c/code\u003e (for SparkSession) and it is automatically initialized within Zeppelin.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163819_1077848933",
+      "id": "20160331-233830_1923635655",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:30.716",
+      "dateFinished": "2018-08-06 13:12:30.718",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Read Text File and Preview its Contents",
+      "text": "%spark2.pyspark\n\n# Parallelize text file using pre-initialized SparkSession\nlines \u003d spark.sparkContext.textFile(\"/tmp/nifi.txt\")\n\n# Take a look at a few lines with a take() action.\nprint lines.take(10)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:30.816",
+      "config": {
+        "tableHide": false,
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "[u\u0027Apache NiFi Overview \u0027, u\u0027Team dev@nifi.apache.org \u0027, u\u0027\u0027, u\u0027What is Apache NiFi? Put simply NiFi was built to automate the flow of data between systems. While the term dataflow is used in a variety of contexts, we\\xe2\\x80\\x99ll use it here to mean the automated and managed flow of information between systems. This problem space has been around ever since enterprises had more than one system, where some of the systems created data and some of the systems consumed data. The problems and solution patterns that emerged have been discussed and articulated extensively. A comprehensive and readily consumed form is found in the Enterprise Integration Patterns [eip]. \u0027, u\u0027\u0027, u\u0027Some of the high-level challenges of dataflow include: \u0027, u\u0027\u0027, u\u0027Systems fail \u0027, u\u0027Networks fail, disks fail, software crashes, people make mistakes. \u0027, u\u0027\u0027]\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d229"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163819_1077848933",
+      "id": "20160331-233830_541232082",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:30.895",
+      "dateFinished": "2018-08-06 13:12:31.045",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Note: \u0027u\u0027 stands for Unicode Characters",
+      "text": "%md\n\nIn the output above, each printed line is prefixed with **`u`**, which simply stands for **Unicode Characters** that represent a standard way of encoding text. You can read more [here](https://en.wikipedia.org/wiki/Unicode) if you\u0027re interested, but for the purpose of this and all other tutorials in the series you can **simply ignore it**.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:31.094",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "editorMode": "ace/mode/markdown",
+        "title": true,
+        "editorHide": true,
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eIn the output above, each printed line is prefixed with \u003cstrong\u003e\u003ccode\u003eu\u003c/code\u003e\u003c/strong\u003e, which simply stands for \u003cstrong\u003eUnicode Characters\u003c/strong\u003e that represent a standard way of encoding text. You can read more \u003ca href\u003d\"https://en.wikipedia.org/wiki/Unicode\"\u003ehere\u003c/a\u003e if you\u0027re interested, but for the purpose of this and all other tutorials in the series you can \u003cstrong\u003esimply ignore it\u003c/strong\u003e.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487752991888_1864548655",
+      "id": "20170222-084311_930733158",
+      "dateCreated": "2017-02-22 08:43:11.000",
+      "dateStarted": "2018-08-06 13:12:31.180",
+      "dateFinished": "2018-08-06 13:12:31.183",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nIn the next paragraphs we will start using Python lambda (or anonymous) functions. If you\u0027re unfamiliar with lambda expressions, \nreview **[Python Lambda Expressions](https://docs.python.org/2/tutorial/controlflow.html#lambda-expressions)** before proceeding.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:31.280",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eIn the next paragraphs we will start using Python lambda (or anonymous) functions. If you\u0027re unfamiliar with lambda expressions,\n\u003cbr  /\u003ereview \u003cstrong\u003e\u003ca href\u003d\"https://docs.python.org/2/tutorial/controlflow.html#lambda-expressions\"\u003ePython Lambda Expressions\u003c/a\u003e\u003c/strong\u003e before proceeding.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163819_1077848933",
+      "id": "20160331-233830_1894357129",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:31.353",
+      "dateFinished": "2018-08-06 13:12:31.355",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Extract All Words from the Document",
+      "text": "%spark2.pyspark\n# Here we\u0027re tokenizing our text file by using the split() function. Each original line of text is split into words or tokens on a single space.\n#  Also, since each line of the original text occupies a seperate bucket in the array, we need to use\n#  a flatMap() transformation to flatten all buckets into a asingle/flat array of tokens.\n\nwords \u003d lines.flatMap(lambda line: line.split(\" \"))",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:31.453",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "title": true,
+        "results": [],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163819_1077848933",
+      "id": "20160331-233830_2015200328",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:31.542",
+      "dateFinished": "2018-08-06 13:12:31.547",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nNote that after you click `play` in the paragraph above \"nothing\" appears to happen.\n\nThat\u0027s because `flatMap()` is a **transformation** and all transformations in Spark are lazy, in that they do not compute their results right away. Instead, they just remember the transformations applied to some base dataset (e.g. a file). The transformations are only computed when an action requires a result to be returned to the driver program. This design enables Spark to run more efficiently – for example, we can realize that a dataset created through map will be used in a reduce and return only the result of the reduce to the driver, rather than the larger mapped dataset.\n\nBy default, each transformed RDD may be recomputed each time you run an action on it. However, you may also persist an RDD in memory using the persist (or cache) method, in which case Spark will keep the elements around on the cluster for much faster access the next time you query it. There is also support for persisting RDDs on disk, or replicated across multiple nodes.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:31.642",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eNote that after you click \u003ccode\u003eplay\u003c/code\u003e in the paragraph above \u0026ldquo;nothing\u0026rdquo; appears to happen.\u003c/p\u003e\n\u003cp\u003eThat\u0027s because \u003ccode\u003eflatMap()\u003c/code\u003e is a \u003cstrong\u003etransformation\u003c/strong\u003e and all transformations in Spark are lazy, in that they do not compute their results right away. Instead, they just remember the transformations applied to some base dataset (e.g. a file). The transformations are only computed when an action requires a result to be returned to the driver program. This design enables Spark to run more efficiently – for example, we can realize that a dataset created through map will be used in a reduce and return only the result of the reduce to the driver, rather than the larger mapped dataset.\u003c/p\u003e\n\u003cp\u003eBy default, each transformed RDD may be recomputed each time you run an action on it. However, you may also persist an RDD in memory using the persist (or cache) method, in which case Spark will keep the elements around on the cluster for much faster access the next time you query it. There is also support for persisting RDDs on disk, or replicated across multiple nodes.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163819_1077848933",
+      "id": "20160331-233830_1507315859",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:31.735",
+      "dateFinished": "2018-08-06 13:12:31.738",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Take a look at first 100 words",
+      "text": "%spark2.pyspark\nprint words.take(100)   # we\u0027re using a take(n) action\n\n# Output: As you can see, each word occupies a distinc array bucket.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:31.835",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "[u\u0027Apache\u0027, u\u0027NiFi\u0027, u\u0027Overview\u0027, u\u0027\u0027, u\u0027Team\u0027, u\u0027dev@nifi.apache.org\u0027, u\u0027\u0027, u\u0027\u0027, u\u0027What\u0027, u\u0027is\u0027, u\u0027Apache\u0027, u\u0027NiFi?\u0027, u\u0027Put\u0027, u\u0027simply\u0027, u\u0027NiFi\u0027, u\u0027was\u0027, u\u0027built\u0027, u\u0027to\u0027, u\u0027automate\u0027, u\u0027the\u0027, u\u0027flow\u0027, u\u0027of\u0027, u\u0027data\u0027, u\u0027between\u0027, u\u0027systems.\u0027, u\u0027While\u0027, u\u0027the\u0027, u\u0027term\u0027, u\u0027dataflow\u0027, u\u0027is\u0027, u\u0027used\u0027, u\u0027in\u0027, u\u0027a\u0027, u\u0027variety\u0027, u\u0027of\u0027, u\u0027contexts,\u0027, u\u0027we\\xe2\\x80\\x99ll\u0027, u\u0027use\u0027, u\u0027it\u0027, u\u0027here\u0027, u\u0027to\u0027, u\u0027mean\u0027, u\u0027the\u0027, u\u0027automated\u0027, u\u0027and\u0027, u\u0027managed\u0027, u\u0027flow\u0027, u\u0027of\u0027, u\u0027information\u0027, u\u0027between\u0027, u\u0027systems.\u0027, u\u0027This\u0027, u\u0027problem\u0027, u\u0027space\u0027, u\u0027has\u0027, u\u0027been\u0027, u\u0027around\u0027, u\u0027ever\u0027, u\u0027since\u0027, u\u0027enterprises\u0027, u\u0027had\u0027, u\u0027more\u0027, u\u0027than\u0027, u\u0027one\u0027, u\u0027system,\u0027, u\u0027where\u0027, u\u0027some\u0027, u\u0027of\u0027, u\u0027the\u0027, u\u0027systems\u0027, u\u0027created\u0027, u\u0027data\u0027, u\u0027and\u0027, u\u0027some\u0027, u\u0027of\u0027, u\u0027the\u0027, u\u0027systems\u0027, u\u0027consumed\u0027, u\u0027data.\u0027, u\u0027The\u0027, u\u0027problems\u0027, u\u0027and\u0027, u\u0027solution\u0027, u\u0027patterns\u0027, u\u0027that\u0027, u\u0027emerged\u0027, u\u0027have\u0027, u\u0027been\u0027, u\u0027discussed\u0027, u\u0027and\u0027, u\u0027articulated\u0027, u\u0027extensively.\u0027, u\u0027A\u0027, u\u0027comprehensive\u0027, u\u0027and\u0027, u\u0027readily\u0027, u\u0027consumed\u0027, u\u0027form\u0027, u\u0027is\u0027, u\u0027found\u0027]\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d230"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163819_1077848933",
+      "id": "20160331-233830_1740542201",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:31.920",
+      "dateFinished": "2018-08-06 13:12:32.009",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Remove Empty Words",
+      "text": "%spark2.pyspark\n\nwordsFiltered \u003d words.filter(lambda w: len(w) \u003e 0)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:32.020",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "editorHide": false,
+        "title": true,
+        "results": [],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163820_1075925189",
+      "id": "20160331-233830_270532773",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:32.182",
+      "dateFinished": "2018-08-06 13:12:32.186",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Get Total Number of Words",
+      "text": "%spark2.pyspark\n\nprint wordsFiltered.count()     # using a count() action",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:32.282",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "2517\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d231"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163820_1075925189",
+      "id": "20160331-233830_229739488",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:32.372",
+      "dateFinished": "2018-08-06 13:12:32.478",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n#### Word Counts\n\nLet\u0027s see what are the most popular words by performing a word count using `map()` and `reduceByKey()` transformations to create tuples of type (word, count).",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:32.572",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003ch4\u003eWord Counts\u003c/h4\u003e\n\u003cp\u003eLet\u0027s see what are the most popular words by performing a word count using \u003ccode\u003emap()\u003c/code\u003e and \u003ccode\u003ereduceByKey()\u003c/code\u003e transformations to create tuples of type (word, count).\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163820_1075925189",
+      "id": "20160331-233830_55977510",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:32.644",
+      "dateFinished": "2018-08-06 13:12:32.646",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Word count with a RDD",
+      "text": "%spark2.pyspark\n\nwordCounts \u003d wordsFiltered.map(lambda word: (word, 1)).reduceByKey(lambda a,b: a+b)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:32.743",
+      "config": {
+        "tableHide": false,
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "title": false,
+        "results": [],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163820_1075925189",
+      "id": "20160331-233830_216173184",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:32.863",
+      "dateFinished": "2018-08-06 13:12:32.898",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n#### View Word Count Tuples\nNow let\u0027s take a look at top 100 words in descending order with a `takeOrdered()` action.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:32.962",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003ch4\u003eView Word Count Tuples\u003c/h4\u003e\n\u003cp\u003eNow let\u0027s take a look at top 100 words in descending order with a \u003ccode\u003etakeOrdered()\u003c/code\u003e action.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163820_1075925189",
+      "id": "20160331-233830_1029129342",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:33.047",
+      "dateFinished": "2018-08-06 13:12:33.050",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%spark2.pyspark\nprint wordCounts.takeOrdered(100, lambda (w,c): -c)\n",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:33.147",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "[(u\u0027the\u0027, 110), (u\u0027of\u0027, 94), (u\u0027and\u0027, 89), (u\u0027to\u0027, 84), (u\u0027is\u0027, 62), (u\u0027a\u0027, 60), (u\u0027NiFi\u0027, 41), (u\u0027as\u0027, 32), (u\u0027The\u0027, 28), (u\u0027be\u0027, 26), (u\u0027in\u0027, 25), (u\u0027are\u0027, 22), (u\u0027it\u0027, 22), (u\u0027data\u0027, 20), (u\u0027that\u0027, 20), (u\u0027for\u0027, 19), (u\u0027can\u0027, 19), (u\u0027or\u0027, 19), (u\u0027on\u0027, 17), (u\u0027system\u0027, 16), (u\u0027which\u0027, 14), (u\u0027dataflow\u0027, 12), (u\u0027will\u0027, 11), (u\u0027flow\u0027, 11), (u\u0027more\u0027, 11), (u\u0027at\u0027, 11), (u\u0027FlowFile\u0027, 9), (u\u0027given\u0027, 9), (u\u0027Flow\u0027, 9), (u\u0027one\u0027, 9), (u\u0027very\u0027, 8), (u\u0027content\u0027, 8), (u\u0027This\u0027, 8), (u\u0027some\u0027, 8), (u\u0027with\u0027, 8), (u\u0027within\u0027, 8), (u\u0027all\u0027, 7), (u\u0027repository\u0027, 7), (u\u0027use\u0027, 7), (u\u0027A\u0027, 7), (u\u0027Controller\u0027, 7), (u\u0027where\u0027, 7), (u\u0027other\u0027, 7), (u\u0027how\u0027, 7), (u\u0027then\u0027, 7), (u\u0027even\u0027, 6), (u\u0027through\u0027, 6), (u\u0027Repository\u0027, 6), (u\u0027make\u0027, 6), (u\u0027well\u0027, 6), (u\u0027each\u0027, 6), (u\u0027their\u0027, 6), (u\u0027between\u0027, 6), (u\u0027an\u0027, 6), (u\u0027threads\u0027, 5), (u\u0027change\u0027, 5), (u\u0027allow\u0027, 5), (u\u0027they\u0027, 5), (u\u0027For\u0027, 5), (u\u0027Data\u0027, 5), (u\u0027these\u0027, 5), (u\u0027processes\u0027, 5), (u\u0027flows\u0027, 5), (u\u0027specific\u0027, 5), (u\u0027default\u0027, 5), (u\u0027cluster\u0027, 5), (u\u0027designed\u0027, 5), (u\u0027also\u0027, 5), (u\u0027should\u0027, 5), (u\u0027many\u0027, 5), (u\u0027point\u0027, 5), (u\u0027by\u0027, 5), (u\u0027there\u0027, 5), (u\u0027becomes\u0027, 5), (u\u0027those\u0027, 4), (u\u0027design\u0027, 4), (u\u0027These\u0027, 4), (u\u0027when\u0027, 4), (u\u0027extensions\u0027, 4), (u\u0027effective\u0027, 4), (u\u0027so\u0027, 4), (u\u0027NiFi\\xe2\\x80\\x99s\u0027, 4), (u\u0027have\u0027, 4), (u\u0027able\u0027, 4), (u\u0027Nodes\u0027, 4), (u\u0027only\u0027, 4), (u\u0027been\u0027, 4), (u\u0027components\u0027, 4), (u\u0027JVM\u0027, 4), (u\u0027host\u0027, 4), (u\u0027about\u0027, 4), (u\u0027extension\u0027, 4), (u\u0027Processors\u0027, 4), (u\u0027new\u0027, 4), (u\u0027concepts\u0027, 4), (u\u0027such\u0027, 4), (u\u0027NCM\u0027, 4), (u\u0027its\u0027, 4), (u\u0027systems\u0027, 4), (u\u0027Architecture\u0027, 4)]\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d232"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163820_1075925189",
+      "id": "20160331-233830_743558056",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:33.251",
+      "dateFinished": "2018-08-06 13:12:33.438",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n#### Filter out infrequent words\nWe\u0027ll use `filter()` transformation to filter out words that occur less than five times.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:33.451",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003ch4\u003eFilter out infrequent words\u003c/h4\u003e\n\u003cp\u003eWe\u0027ll use \u003ccode\u003efilter()\u003c/code\u003e transformation to filter out words that occur less than five times.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163820_1075925189",
+      "id": "20160331-233830_772905299",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:33.584",
+      "dateFinished": "2018-08-06 13:12:33.586",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%spark2.pyspark\n\nfilteredWordCounts \u003d wordCounts.filter(lambda (w,c): c \u003e\u003d 5)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:33.684",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "editorHide": false,
+        "results": [],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "title": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163820_1075925189",
+      "id": "20160331-233830_90779590",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:33.801",
+      "dateFinished": "2018-08-06 13:12:33.806",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Take a Look at Results",
+      "text": "%spark2.pyspark\n\nprint filteredWordCounts.collect()   # we\u0027re using a collect() action to pull everything back to the Spark driver",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:33.900",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "[(u\u0027all\u0027, 7), (u\u0027very\u0027, 8), (u\u0027even\u0027, 6), (u\u0027repository\u0027, 7), (u\u0027FlowFile\u0027, 9), (u\u0027threads\u0027, 5), (u\u0027change\u0027, 5), (u\u0027use\u0027, 7), (u\u0027A\u0027, 7), (u\u0027data\u0027, 20), (u\u0027a\u0027, 60), (u\u0027allow\u0027, 5), (u\u0027through\u0027, 6), (u\u0027they\u0027, 5), (u\u0027content\u0027, 8), (u\u0027This\u0027, 8), (u\u0027given\u0027, 9), (u\u0027For\u0027, 5), (u\u0027Repository\u0027, 6), (u\u0027Data\u0027, 5), (u\u0027and\u0027, 89), (u\u0027these\u0027, 5), (u\u0027which\u0027, 14), (u\u0027The\u0027, 28), (u\u0027NiFi\u0027, 41), (u\u0027Controller\u0027, 7), (u\u0027processes\u0027, 5), (u\u0027where\u0027, 7), (u\u0027Flow\u0027, 9), (u\u0027will\u0027, 11), (u\u0027is\u0027, 62), (u\u0027make\u0027, 6), (u\u0027flows\u0027, 5), (u\u0027well\u0027, 6), (u\u0027the\u0027, 110), (u\u0027specific\u0027, 5), (u\u0027some\u0027, 8), (u\u0027for\u0027, 19), (u\u0027dataflow\u0027, 12), (u\u0027with\u0027, 8), (u\u0027default\u0027, 5), (u\u0027flow\u0027, 11), (u\u0027as\u0027, 32), (u\u0027to\u0027, 84), (u\u0027cluster\u0027, 5), (u\u0027other\u0027, 7), (u\u0027can\u0027, 19), (u\u0027how\u0027, 7), (u\u0027designed\u0027, 5), (u\u0027or\u0027, 19), (u\u0027then\u0027, 7), (u\u0027each\u0027, 6), (u\u0027one\u0027, 9), (u\u0027system\u0027, 16), (u\u0027their\u0027, 6), (u\u0027that\u0027, 20), (u\u0027also\u0027, 5), (u\u0027should\u0027, 5), (u\u0027are\u0027, 22), (u\u0027between\u0027, 6), (u\u0027many\u0027, 5), (u\u0027point\u0027, 5), (u\u0027it\u0027, 22), (u\u0027in\u0027, 25), (u\u0027be\u0027, 26), (u\u0027by\u0027, 5), (u\u0027on\u0027, 17), (u\u0027of\u0027, 94), (u\u0027within\u0027, 8), (u\u0027there\u0027, 5), (u\u0027more\u0027, 11), (u\u0027an\u0027, 6), (u\u0027at\u0027, 11), (u\u0027becomes\u0027, 5)]\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d233"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163821_1075540440",
+      "id": "20160331-233830_1024657848",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:33.990",
+      "dateFinished": "2018-08-06 13:12:34.081",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "",
+      "text": "%md\nNow let\u0027s use `countByKey()` action for another way of returning a word count.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:34.090",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "title": false,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eNow let\u0027s use \u003ccode\u003ecountByKey()\u003c/code\u003e action for another way of returning a word count.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163821_1075540440",
+      "id": "20160331-233830_753086043",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:34.277",
+      "dateFinished": "2018-08-06 13:12:34.279",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Print Data Structure Type",
+      "text": "%spark2.pyspark\n\nresult \u003d  words.map(lambda w: (w,1)).countByKey()\n\n# Print type of data structure\nprint type(result)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:34.376",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "title": true,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u003ctype \u0027collections.defaultdict\u0027\u003e\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d234"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163821_1075540440",
+      "id": "20160331-233830_1995992930",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:34.459",
+      "dateFinished": "2018-08-06 13:12:34.559",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n**Note** that the **result** is an **unordered dictionary of type {word, count}**.\nSince this is a small set we can apply a simple (non-parallelizeable) python built-in function.\n",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:34.658",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003e\u003cstrong\u003eNote\u003c/strong\u003e that the \u003cstrong\u003eresult\u003c/strong\u003e is an \u003cstrong\u003eunordered dictionary of type {word, count}\u003c/strong\u003e.\n\u003cbr  /\u003eSince this is a small set we can apply a simple (non-parallelizeable) python built-in function.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163821_1075540440",
+      "id": "20160331-233830_811124723",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:34.778",
+      "dateFinished": "2018-08-06 13:12:34.780",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nTake a look at first 20 items in our dictionary.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:34.878",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eTake a look at first 20 items in our dictionary.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163821_1075540440",
+      "id": "20160331-233830_347028305",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:34.955",
+      "dateFinished": "2018-08-06 13:12:34.957",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%spark2.pyspark\n# Print first 20 items\nprint result.items()[0:20]",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:35.055",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "[(u\u0027\u0027, 111), (u\u0027limited\u0027, 2), (u\u0027all\u0027, 7), (u\u0027concept\u0027, 1), (u\u0027managed\u0027, 1), (u\u0027contexts,\u0027, 1), (u\u0027chain\u0027, 1), (u\u0027indicating\u0027, 1), (u\u0027partition.\u0027, 1), (u\u0027existing\u0027, 1), (u\u0027[iot],\u0027, 1), (u\u0027executing\u0027, 1), (u\u0027Routing,\u0027, 1), (u\u0027manages\u0027, 2), (u\u0027scale-out\u0027, 1), (u\u0027/\u0027, 1), (u\u0027invariably\u0027, 1), (u\u0027Based\u0027, 1), (u\u0027disk\u0027, 3), (u\u0027CPU\u0027, 2)]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163821_1075540440",
+      "id": "20160331-233830_2086620530",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:35.158",
+      "dateFinished": "2018-08-06 13:12:35.165",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nApply a python `sorted()` function on the **result** dictionary values.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:35.258",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eApply a python \u003ccode\u003esorted()\u003c/code\u003e function on the \u003cstrong\u003eresult\u003c/strong\u003e dictionary values.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163821_1075540440",
+      "id": "20160331-233830_1423292200",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:35.347",
+      "dateFinished": "2018-08-06 13:12:35.350",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%spark2.pyspark\nimport operator\n\n# Sort in descending order\nsortedResult \u003d sorted(result.items(), key\u003doperator.itemgetter(1), reverse\u003dTrue)\n\n# Print top 20 items\nprint sortedResult[0:20]",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:35.447",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "title": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "[(u\u0027\u0027, 111), (u\u0027the\u0027, 110), (u\u0027of\u0027, 94), (u\u0027and\u0027, 89), (u\u0027to\u0027, 84), (u\u0027is\u0027, 62), (u\u0027a\u0027, 60), (u\u0027NiFi\u0027, 41), (u\u0027as\u0027, 32), (u\u0027The\u0027, 28), (u\u0027be\u0027, 26), (u\u0027in\u0027, 25), (u\u0027are\u0027, 22), (u\u0027it\u0027, 22), (u\u0027data\u0027, 20), (u\u0027that\u0027, 20), (u\u0027can\u0027, 19), (u\u0027for\u0027, 19), (u\u0027or\u0027, 19), (u\u0027on\u0027, 17)]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163822_1076694687",
+      "id": "20160331-233830_451661467",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:35.543",
+      "dateFinished": "2018-08-06 13:12:35.548",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n## Part 2\n#### Introduction to DataFrames and SQL APIs (Spark SQL Module)",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:35.642",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003ch2\u003ePart 2\u003c/h2\u003e\n\u003ch4\u003eIntroduction to DataFrames and SQL APIs (Spark SQL Module)\u003c/h4\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163822_1076694687",
+      "id": "20160331-233830_1867067371",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:35.746",
+      "dateFinished": "2018-08-06 13:12:35.748",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nIn this section we will cover the concept of a DataFrame. You will convert RDDs from a previous section and then use higher level \noperations to demonstrate a different way of counting words. Then you will register a temporary table and perform a word count by \nexecuting a SQL query on that table.\n\nBy the end of the section you will have learned higher-level Spark abstractions that hide lower-level details, speed up prototyping and execution. ",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:35.846",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "tableHide": false,
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eIn this section we will cover the concept of a DataFrame. You will convert RDDs from a previous section and then use higher level\n\u003cbr  /\u003eoperations to demonstrate a different way of counting words. Then you will register a temporary table and perform a word count by\n\u003cbr  /\u003eexecuting a SQL query on that table.\u003c/p\u003e\n\u003cp\u003eBy the end of the section you will have learned higher-level Spark abstractions that hide lower-level details, speed up prototyping and execution.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163822_1076694687",
+      "id": "20160331-233830_770254433",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:35.925",
+      "dateFinished": "2018-08-06 13:12:35.927",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "DataFrame",
+      "text": "%md\nA DataFrame is a distributed collection of data organized into named columns. It is conceptually equivalent to a table in a relational database or a data frame in R/Python, but with richer optimizations under the hood. DataFrames can be constructed from a wide array of sources such as: structured data files, tables in Hive, external databases, or existing RDDs. [See SparkSQL docs for more info](http://spark.apache.org/docs/latest/sql-programming-guide.html#dataframes).",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:36.025",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eA DataFrame is a distributed collection of data organized into named columns. It is conceptually equivalent to a table in a relational database or a data frame in R/Python, but with richer optimizations under the hood. DataFrames can be constructed from a wide array of sources such as: structured data files, tables in Hive, external databases, or existing RDDs. \u003ca href\u003d\"http://spark.apache.org/docs/latest/sql-programming-guide.html#dataframes\"\u003eSee SparkSQL docs for more info\u003c/a\u003e.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163822_1076694687",
+      "id": "20160331-233830_634831315",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:36.139",
+      "dateFinished": "2018-08-06 13:12:36.141",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nTransform your RDD into a DataFrame and perform DataFrame specific operations.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:36.238",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eTransform your RDD into a DataFrame and perform DataFrame specific operations.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163822_1076694687",
+      "id": "20160331-233830_911152909",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:36.315",
+      "dateFinished": "2018-08-06 13:12:36.318",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Word Count with a DataFrame",
+      "text": "%spark2.pyspark\nfrom pyspark.sql import Row\n# First, let\u0027s transform our RDD to a DataFrame.\n# We will use a Row to define column names.\nwordsCounts \u003d (filteredWordCounts.map(lambda (w, c): \n                Row(word\u003dw,\n                    count\u003dc))\n                .toDF())\n\n# Print schema\nwordsCounts.printSchema()\n\n# Output: As you can see, the count and word types have been inferred without having to explicitly define long and string types respectively.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:36.415",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- count: long (nullable \u003d true)\n |-- word: string (nullable \u003d true)\n\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d235"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163822_1076694687",
+      "id": "20160331-233830_41054806",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:36.566",
+      "dateFinished": "2018-08-06 13:12:36.684",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Show top 20 rows",
+      "text": "%spark2.pyspark\n\n# Show top 20 rows\nwordsCounts.show()",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:36.766",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "editorHide": false,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+-----+----------+\n|count|      word|\n+-----+----------+\n|    7|       all|\n|    8|      very|\n|    5|     these|\n|    6|      even|\n|    5|   threads|\n|    5|    change|\n|    7|       use|\n|    7|         A|\n|   20|      data|\n|    5|     allow|\n|    6|   through|\n|    5|      they|\n|    8|   content|\n|    8|      This|\n|    9|     given|\n|    6|Repository|\n|    5|      Data|\n|   60|         a|\n|   89|       and|\n|   14|     which|\n+-----+----------+\nonly showing top 20 rows\n\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d236"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163822_1076694687",
+      "id": "20160331-233830_665873755",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:36.849",
+      "dateFinished": "2018-08-06 13:12:36.952",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Register a Temporary View",
+      "text": "%spark2.pyspark\n\nwordsCounts.createOrReplaceTempView(\"wordcounts\")",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:37.059",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "title": true,
+        "results": [],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163822_1076694687",
+      "id": "20160331-233830_802915768",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:37.203",
+      "dateFinished": "2018-08-06 13:12:37.220",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nNow we can query the temporary `wordcounts` table with a SQL statement.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:37.300",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eNow we can query the temporary \u003ccode\u003ewordcounts\u003c/code\u003e table with a SQL statement.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163823_1076309938",
+      "id": "20160331-233830_1965558675",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:37.428",
+      "dateFinished": "2018-08-06 13:12:37.440",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nTo execute a SparkSQL query we prepend a block of SQL code with a `%sql` line.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:37.569",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eTo execute a SparkSQL query we prepend a block of SQL code with a \u003ccode\u003e%sql\u003c/code\u003e line.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163823_1076309938",
+      "id": "20160331-233830_403708924",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:37.706",
+      "dateFinished": "2018-08-06 13:12:37.708",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "",
+      "text": "%spark2.sql\n\n-- Display word counts in descending order\nSELECT word, count FROM wordcounts ORDER BY count DESC",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:37.805",
+      "config": {
+        "tableHide": false,
+        "editorMode": "ace/mode/sql",
+        "colWidth": 12.0,
+        "title": false,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [
+                {
+                  "name": "word",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              ],
+              "values": [],
+              "groups": [],
+              "scatter": {
+                "xAxis": {
+                  "name": "word",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              },
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "word": "string",
+                      "count": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "sql",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "word\tcount\nthe\t110\nof\t94\nand\t89\nto\t84\nis\t62\na\t60\nNiFi\t41\nas\t32\nThe\t28\nbe\t26\nin\t25\nare\t22\nit\t22\ndata\t20\nthat\t20\ncan\t19\nfor\t19\nor\t19\non\t17\nsystem\t16\nwhich\t14\ndataflow\t12\nflow\t11\nmore\t11\nwill\t11\nat\t11\nFlow\t9\ngiven\t9\none\t9\nFlowFile\t9\nvery\t8\nThis\t8\nwith\t8\ncontent\t8\nsome\t8\nwithin\t8\nA\t7\nthen\t7\nController\t7\nall\t7\nhow\t7\nother\t7\nwhere\t7\nuse\t7\nrepository\t7\nthrough\t6\nbetween\t6\nmake\t6\nan\t6\neven\t6\neach\t6\ntheir\t6\nRepository\t6\nwell\t6\nthreads\t5\nchange\t5\nalso\t5\nallow\t5\nprocesses\t5\npoint\t5\nshould\t5\nmany\t5\nthey\t5\nflows\t5\ncluster\t5\nby\t5\nFor\t5\nData\t5\nspecific\t5\ndesigned\t5\nthere\t5\nbecomes\t5\nthese\t5\ndefault\t5\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d237"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163823_1076309938",
+      "id": "20160331-233830_1235044795",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:37.904",
+      "dateFinished": "2018-08-06 13:12:38.025",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\nNow let\u0027s take a step back and perform a word count with SQL",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:38.104",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eNow let\u0027s take a step back and perform a word count with SQL\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163823_1076309938",
+      "id": "20160331-233830_1968421310",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:38.185",
+      "dateFinished": "2018-08-06 13:12:38.187",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Convert RDD to a DataFrame and Register a New Temp Table",
+      "text": "%spark2.pyspark\n\n# Convert wordsFiltered RDD to a Data Frame\nwords \u003d wordsFiltered.map(lambda w: Row(word\u003dw, count\u003d1)).toDF()",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:38.285",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "editorHide": false,
+        "title": true,
+        "results": [],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d238"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163823_1076309938",
+      "id": "20160331-233830_1271375135",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:38.369",
+      "dateFinished": "2018-08-06 13:12:38.479",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Use DataFrame Specific Functions to Determine Word Counts",
+      "text": "%spark2.pyspark\n\n(words.groupBy(\"word\")\n        .sum()\n        .orderBy(\"sum(count)\", ascending\u003d0)\n        .limit(10).show())",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:38.569",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+----+----------+\n|word|sum(count)|\n+----+----------+\n| the|       110|\n|  of|        94|\n| and|        89|\n|  to|        84|\n|  is|        62|\n|   a|        60|\n|NiFi|        41|\n|  as|        32|\n| The|        28|\n|  be|        26|\n+----+----------+\n\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d239"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163823_1076309938",
+      "id": "20160331-233830_539606295",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:38.653",
+      "dateFinished": "2018-08-06 13:12:40.108",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Register as Temporary View",
+      "text": "%spark2.pyspark\n\n# Create a Temporary View\nwords.createOrReplaceTempView(\"words\")",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:40.154",
+      "config": {
+        "editorMode": "ace/mode/python",
+        "colWidth": 12.0,
+        "title": true,
+        "results": [],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "python",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163823_1076309938",
+      "id": "20160331-233830_339558784",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:40.255",
+      "dateFinished": "2018-08-06 13:12:40.266",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Word Count using SQL",
+      "text": "%md\n\nNow let\u0027s do a word count using a SQL statement against the `words` table and order the results in a descending order by count.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:40.354",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eNow let\u0027s do a word count using a SQL statement against the \u003ccode\u003ewords\u003c/code\u003e table and order the results in a descending order by count.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163824_1086698158",
+      "id": "20160331-233830_1100432609",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:40.440",
+      "dateFinished": "2018-08-06 13:12:40.442",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%spark2.sql\n\nSELECT word, count(*) as count FROM words GROUP BY word ORDER BY count DESC LIMIT 10",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:18:24.363",
+      "config": {
+        "tableHide": false,
+        "editorMode": "ace/mode/sql",
+        "colWidth": 12.0,
+        "editorHide": false,
+        "results": [
+          {
+            "graph": {
+              "mode": "multiBarChart",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [
+                {
+                  "name": "word",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              ],
+              "values": [
+                {
+                  "name": "count",
+                  "index": 1.0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [],
+              "scatter": {
+                "xAxis": {
+                  "name": "word",
+                  "index": 0.0,
+                  "aggr": "sum"
+                },
+                "yAxis": {
+                  "name": "count",
+                  "index": 1.0,
+                  "aggr": "sum"
+                }
+              },
+              "setting": {
+                "multiBarChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "sql",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "word\tcount\nthe\t110\nof\t94\nand\t89\nto\t84\nis\t62\na\t60\nNiFi\t41\nas\t32\nThe\t28\nbe\t26\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://ctr-e138-1518143905142-426538-01-000002.hwx.site:4040/jobs/job?id\u003d240"
+          ],
+          "interpreterSettingId": "spark2"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163824_1086698158",
+      "id": "20160331-233830_841691499",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:40.644",
+      "dateFinished": "2018-08-06 13:12:41.721",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "The End",
+      "text": "%md\nYou\u0027ve reached the end of this lab! We hope you\u0027ve been able to successfully complete all the sections and learned a thing or two about Apache Spark: low-level RDD transformations and actions as well as higher-level DataFrame and SQL APIs.",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:41.744",
+      "config": {
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 12.0,
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eYou\u0027ve reached the end of this lab! We hope you\u0027ve been able to successfully complete all the sections and learned a thing or two about Apache Spark: low-level RDD transformations and actions as well as higher-level DataFrame and SQL APIs.\u003c/p\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163824_1086698158",
+      "id": "20160331-233830_293992216",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:41.887",
+      "dateFinished": "2018-08-06 13:12:41.888",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Additional Resources",
+      "text": "%md\n\nWe hope you\u0027ve enjoyed this brief intro to Apache Spark. Below are additional resources that you should find useful:\n\n1. [Hortonworks Apache Spark Tutorials](http://hortonworks.com/tutorials/#tuts-developers) are your natural next step where you can explore Spark in more depth.\n2. [Hortonworks Community Connection (HCC)](https://community.hortonworks.com/spaces/85/data-science.html?type\u003dquestion) is a great resource for questions and answers on Spark, Data Analytics/Science, and many more Big Data topics.\n3. [Hortonworks Apache Spark Docs](http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_spark-component-guide/content/ch_developing-spark-apps.html) - official Spark documentation.\n4. [Hortonworks Apache Zeppelin Docs](http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_zeppelin-component-guide/content/ch_using_zeppelin.html) - official Zeppelin documentation.\n",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:41.987",
+      "config": {
+        "tableHide": false,
+        "editorMode": "ace/mode/markdown",
+        "colWidth": 10.0,
+        "editorHide": true,
+        "title": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {
+          "editOnDblClick": true,
+          "language": "markdown"
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cp\u003eWe hope you\u0027ve enjoyed this brief intro to Apache Spark. Below are additional resources that you should find useful:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003ca href\u003d\"http://hortonworks.com/tutorials/#tuts-developers\"\u003eHortonworks Apache Spark Tutorials\u003c/a\u003e are your natural next step where you can explore Spark in more depth.\u003c/li\u003e\n\u003cli\u003e\u003ca href\u003d\"https://community.hortonworks.com/spaces/85/data-science.html?type\u003dquestion\"\u003eHortonworks Community Connection (HCC)\u003c/a\u003e is a great resource for questions and answers on Spark, Data Analytics/Science, and many more Big Data topics.\u003c/li\u003e\n\u003cli\u003e\u003ca href\u003d\"http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_spark-component-guide/content/ch_developing-spark-apps.html\"\u003eHortonworks Apache Spark Docs\u003c/a\u003e - official Spark documentation.\u003c/li\u003e\n\u003cli\u003e\u003ca href\u003d\"http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_zeppelin-component-guide/content/ch_using_zeppelin.html\"\u003eHortonworks Apache Zeppelin Docs\u003c/a\u003e - official Zeppelin documentation.\u003c/li\u003e\n\u003c/ol\u003e\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163824_1086698158",
+      "id": "20160331-233830_1914786212",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:42.077",
+      "dateFinished": "2018-08-06 13:12:42.080",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%angular\n\u003c/br\u003e\n\u003ccenter\u003e\n\u003ca href\u003d\"https://community.hortonworks.com/spaces/85/data-science.html?type\u003dquestion\" target\u003d\u0027_blank\u0027\u003e\n  \u003cimg src\u003d\"http://hortonworks.com/wp-content/uploads/2016/03/logo-hcc.png\" alt\u003d\"HCC\" style\u003d\"width:125px;height:125px;border:0;\" align\u003d\"middle\"\u003e\n\u003c/a\u003e\n\u003c/center\u003e",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:42.177",
+      "config": {
+        "editorMode": "ace/mode/scala",
+        "colWidth": 2.0,
+        "editorHide": true,
+        "results": [
+          {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "keys": [],
+              "values": [],
+              "groups": [],
+              "scatter": {}
+            }
+          }
+        ],
+        "enabled": true,
+        "editorSetting": {},
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "ANGULAR",
+            "data": "\u003c/br\u003e\n\u003ccenter\u003e\n\u003ca href\u003d\"https://community.hortonworks.com/spaces/85/data-science.html?type\u003dquestion\" target\u003d\u0027_blank\u0027\u003e\n  \u003cimg src\u003d\"http://hortonworks.com/wp-content/uploads/2016/03/logo-hcc.png\" alt\u003d\"HCC\" style\u003d\"width:125px;height:125px;border:0;\" align\u003d\"middle\"\u003e\n\u003c/a\u003e\n\u003c/center\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163824_1086698158",
+      "id": "20160331-233830_200815067",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "dateStarted": "2018-08-06 13:12:42.269",
+      "dateFinished": "2018-08-06 13:12:42.276",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "",
+      "user": "admin",
+      "dateUpdated": "2018-08-06 13:12:42.368",
+      "config": {
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "editOnDblClick": false,
+          "language": "scala",
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "fontSize": 9.0
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1487397163824_1086698158",
+      "id": "20161018-144007_1720066531",
+      "dateCreated": "2017-02-18 05:52:43.000",
+      "status": "FINISHED",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Labs / Spark 2.x / Data Worker / Python / 101 - Intro to Spark",
+  "id": "2CAX5JCTA",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {
+    "md:shared_process": [],
+    "angular:shared_process": [],
+    "spark2:shared_process": []
+  },
+  "config": {
+    "looknfeel": "default",
+    "personalizedMode": "false",
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}
